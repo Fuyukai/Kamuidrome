@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "kamuidrone"
+version = "0.1.0"
+description = ""
+authors = ["Lura Skye <l@veriny.tf>"]
+readme = "README.rst"
+packages = [{include = "kamuidrone", from = "src"}]
+license = "GPL-3.0-or-later"
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+trio = ">=0.24.0"
+httpx = ">=0.26.0"
+attrs = ">=23.2.0"
+cattrs = ">=23.2.3"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = ">=0.1.13"
+pyright = ">=1.1.345"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
