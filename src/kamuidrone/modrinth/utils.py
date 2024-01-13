@@ -1,9 +1,12 @@
+from collections.abc import Sequence
 
 from rich import print
 
 from kamuidrone.meta import PackMetadata
 from kamuidrone.modrinth.client import ModrinthApi
 from kamuidrone.modrinth.models import ProjectId, ProjectInfoFromProject, ProjectVersion
+
+type VersionResult = Sequence[tuple[ProjectInfoFromProject, ProjectVersion]]
 
 # Hardcoded Modrinth project IDs used to swap out dependencies easily.
 
@@ -125,7 +128,7 @@ def get_set_of_dependencies(pack: PackMetadata, version: ProjectVersion) -> list
     Gets the appropriate set of required dependencies given the provided :class:`.ProjectVersion`.
     """
 
-    resolved = []
+    resolved: list[ProjectId] = []
     for dep in version.relationships:
         if dep.dependency_type != "required":
             continue
@@ -142,7 +145,7 @@ def resolve_dependency_versions(
     pack: PackMetadata,
     modrinth: ModrinthApi,
     selected_version: ProjectVersion,
-) -> list[ProjectVersion]:
+) -> VersionResult:
     """
     Recursively resolves the dependency versions of the provided selected version.
     """
@@ -156,7 +159,7 @@ def resolve_dependency_versions(
         if not dependencies:
             break
 
-        next_dependencies = []
+        next_dependencies: list[ProjectId] = []
 
         for project in dependencies:
             if project in seen:
@@ -169,4 +172,5 @@ def resolve_dependency_versions(
 
         dependencies = next_dependencies
 
-    return resolved
+    project_infos = modrinth.get_multiple_projects([i.project_id for i in resolved])
+    return list(zip(project_infos, resolved, strict=True))

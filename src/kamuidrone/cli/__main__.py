@@ -72,7 +72,10 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    try:
-        sys.exit(main())
-    except httpx.HTTPStatusError as e:
-        pprint.pprint(e.response.json())
+    def _run():
+        try:
+            sys.exit(main())
+        except httpx.HTTPStatusError as e:
+            pprint.pprint(e.response.json())
+
+    _run()

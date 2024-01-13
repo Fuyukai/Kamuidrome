@@ -14,6 +14,7 @@ from kamuidrone.modrinth.models import (
     ProjectInfoMixin,
     ProjectSearchResult,
     ProjectVersion,
+    VersionId,
 )
 
 CONVERTER = cattr.GenConverter()
@@ -131,7 +132,17 @@ class ModrinthApi:
         resp.raise_for_status()
         return CONVERTER.structure(resp.json(), ProjectSearchResult)
 
-    def get_multiple_versions(self, versions: list[str]) -> list[ProjectVersion]:
+    def get_multiple_projects(self, projects: list[ProjectId]) -> list[ProjectInfoFromProject]:
+        """
+        Gets multiple projeects in one request.
+        """
+
+        resp = self.client.get("/projects", params={"ids": json.dumps(projects)})
+        resp.raise_for_status()
+
+        return CONVERTER.structure(resp.json(), list[ProjectInfoFromProject])
+
+    def get_multiple_versions(self, versions: list[VersionId]) -> list[ProjectVersion]:
         """
         Gets multiple versions in one request.
         """

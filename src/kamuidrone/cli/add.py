@@ -42,7 +42,10 @@ def add_mod_by_searching(pack: LocalPack, client: ModrinthApi, cache: ModCache, 
 
     project_info = client.get_project_info(matched.id)
     version = resolve_latest_version(pack.metadata, client, project_info)
-    all_versions = [version, *resolve_dependency_versions(pack.metadata, client, version)]
+    all_versions = [
+        (project_info, version),
+        *resolve_dependency_versions(pack.metadata, client, version),
+    ]
     pack.download_and_add_mods(client, cache, all_versions, selected_mod=project_info.id)
 
     return 0

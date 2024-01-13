@@ -10,7 +10,8 @@ from tomlkit import load as toml_load
 from kamuidrone.cache import ModCache
 from kamuidrone.meta import PackMetadata
 from kamuidrone.modrinth.client import ModrinthApi
-from kamuidrone.modrinth.models import ProjectId, ProjectVersion
+from kamuidrone.modrinth.models import ProjectId
+from kamuidrone.modrinth.utils import VersionResult
 
 
 class ModSide(enum.Enum):
@@ -28,6 +29,9 @@ class InstalledMod:
     """
     Wraps data about a single installed mod.
     """
+
+    #: The name of this mod.
+    name: str = attr.ib()
 
     #: The actual Modrinth ID for this mod.
     project_id: str = attr.ib()
@@ -78,9 +82,9 @@ class LocalPack:
         self,
         api: ModrinthApi,
         cache: ModCache,
-        versions: list[ProjectVersion],
+        versions: VersionResult,
         selected_mod: ProjectId,
-    ):
+    ) -> None:
         """
         Downloads all of the provided mods and adds them to this pack's index.
         """
@@ -90,7 +94,7 @@ class LocalPack:
         with Progress() as progress:
             all_mods = progress.add_task("[green]Downloading mods...", total=len(versions))
 
-            for version in versions:
+            for project, version in versions:
                 # exists_already = cache.get_real_filename(version.project_id, version.id) is None
                 # if exists_already:
                 #    continue
@@ -106,7 +110,8 @@ class LocalPack:
                     ):
                         progress.update(current_task, advance=chunk)
 
-                self.mods[version.project_id] = InstalledMod(
+                self.mods[project.id] = InstalledMod(
+                    name=project.title,
                     project_id=version.project_id,
                     version=version.version_number,
                     version_id=version.id,
