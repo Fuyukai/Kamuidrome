@@ -29,7 +29,10 @@ pyright = ">=1.1.345"
 [tool.pyright]
 pythonVersion = "3.12"
 include = ["src"]
-strict = ["src"]
+typeCheckingMode = "strict"
+
+reportImplicitOverride = "warning"
+reportUnusedVariable = false
 
 [tool.ruff]
 target-version = "py312"

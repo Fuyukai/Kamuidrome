@@ -1,3 +1,4 @@
+import typing
 from collections.abc import Iterator, Sequence
 from typing import Literal, NewType, final, overload
 
@@ -114,9 +115,11 @@ class ProjectSearchResult(Sequence[ProjectInfoFromSearch]):
     def __bool__(self) -> bool:
         return bool(self.hits)
 
+    @typing.override
     def __iter__(self) -> Iterator[ProjectInfoFromSearch]:
         return iter(self.hits)
 
+    @typing.override
     def __len__(self) -> int:
         return len(self.hits)
 
@@ -128,6 +131,7 @@ class ProjectSearchResult(Sequence[ProjectInfoFromSearch]):
     def __getitem__(self, index: slice) -> Sequence[ProjectInfoFromSearch]:
         ...
 
+    @typing.override
     def __getitem__(
         self, index: int | slice,
     ) -> ProjectInfoFromSearch | Sequence[ProjectInfoFromSearch]:
