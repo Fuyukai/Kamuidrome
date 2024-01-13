@@ -7,7 +7,7 @@ import attr
 import cattrs
 from httpx import Response
 
-from kamuidrone.modrinth.models import ProjectId, VersionId
+from kamuidrome.modrinth.models import ProjectId, VersionId
 
 
 @attr.s(slots=True, kw_only=True)

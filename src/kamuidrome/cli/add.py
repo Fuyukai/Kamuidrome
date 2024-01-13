@@ -1,10 +1,10 @@
 from rich import print
 from rich.prompt import IntPrompt
 
-from kamuidrone.cache import ModCache
-from kamuidrone.modrinth.client import ModrinthApi
-from kamuidrone.modrinth.utils import resolve_dependency_versions, resolve_latest_version
-from kamuidrone.pack import LocalPack
+from kamuidrome.cache import ModCache
+from kamuidrome.modrinth.client import ModrinthApi
+from kamuidrome.modrinth.utils import resolve_dependency_versions, resolve_latest_version
+from kamuidrome.pack import LocalPack
 
 
 def add_mod_by_searching(pack: LocalPack, client: ModrinthApi, cache: ModCache, query: str) -> int:

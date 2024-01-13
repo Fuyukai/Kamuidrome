@@ -2,9 +2,9 @@ from collections.abc import Sequence
 
 from rich import print
 
-from kamuidrone.meta import PackMetadata
-from kamuidrone.modrinth.client import ModrinthApi
-from kamuidrone.modrinth.models import ProjectId, ProjectInfoFromProject, ProjectVersion
+from kamuidrome.meta import PackMetadata
+from kamuidrome.modrinth.client import ModrinthApi
+from kamuidrome.modrinth.models import ProjectId, ProjectInfoFromProject, ProjectVersion
 
 type VersionResult = Sequence[tuple[ProjectInfoFromProject, ProjectVersion]]
 

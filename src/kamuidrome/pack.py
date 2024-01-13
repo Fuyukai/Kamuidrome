@@ -7,11 +7,11 @@ import cattrs
 from rich.progress import Progress
 from tomlkit import load as toml_load
 
-from kamuidrone.cache import ModCache
-from kamuidrone.meta import PackMetadata
-from kamuidrone.modrinth.client import ModrinthApi
-from kamuidrone.modrinth.models import ProjectId
-from kamuidrone.modrinth.utils import VersionResult
+from kamuidrome.cache import ModCache
+from kamuidrome.meta import PackMetadata
+from kamuidrome.modrinth.client import ModrinthApi
+from kamuidrome.modrinth.models import ProjectId
+from kamuidrome.modrinth.utils import VersionResult
 
 
 class ModSide(enum.Enum):
@@ -100,7 +100,7 @@ class LocalPack:
                 #    continue
                 selected_file = version.primary_file
                 current_task = progress.add_task(
-                    f"[green]Downloading[/green] [white]{version.name}[/white]",
+                    f"[green]Downloading[/green] [white]{version.}[/white]",
                     total=selected_file.size,
                 )
 

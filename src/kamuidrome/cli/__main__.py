@@ -6,10 +6,10 @@ from pathlib import Path
 import httpx
 import platformdirs
 
-from kamuidrone.cache import ModCache
-from kamuidrone.cli.add import add_mod_by_searching
-from kamuidrone.modrinth.client import ModrinthApi
-from kamuidrone.pack import load_local_pack
+from kamuidrome.cache import ModCache
+from kamuidrome.cli.add import add_mod_by_searching
+from kamuidrome.modrinth.client import ModrinthApi
+from kamuidrome.pack import load_local_pack
 
 
 def main() -> int:

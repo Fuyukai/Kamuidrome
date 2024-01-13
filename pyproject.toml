@@ -3,12 +3,12 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "kamuidrone"
+name = "kamuidrome"
 version = "0.7.0"
 description = "Modern Minecraft modpack builder"
 authors = ["Lura Skye <l@veriny.tf>"]
 readme = "README.rst"
-packages = [{include = "kamuidrone", from = "src"}]
+packages = [{include = "kamuidrome", from = "src"}]
 license = "GPL-3.0-or-later"
 
 [tool.poetry.dependencies]

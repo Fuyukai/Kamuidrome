@@ -8,7 +8,7 @@ import arrow
 import cattr
 import httpx
 
-from kamuidrone.modrinth.models import (
+from kamuidrome.modrinth.models import (
     ProjectId,
     ProjectInfoFromProject,
     ProjectInfoMixin,
