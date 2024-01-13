@@ -1,24 +1,68 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "kamuidrone"
-version = "0.1.0"
-description = ""
+version = "0.7.0"
+description = "Modern Minecraft modpack builder"
 authors = ["Lura Skye <l@veriny.tf>"]
 readme = "README.rst"
 packages = [{include = "kamuidrone", from = "src"}]
 license = "GPL-3.0-or-later"
 
 [tool.poetry.dependencies]
-python = ">=3.11"
-trio = ">=0.24.0"
+python = ">=3.12"
 httpx = ">=0.26.0"
 attrs = ">=23.2.0"
-cattrs = ">=23.2.3"
-
+cattrs = {git = "https://github.com/python-attrs/cattrs.git", rev = "385067e2a053b1aa69904285da2147287dab9283"}
+click = ">=8.1.7"
+tomlkit = "^0.12.3"
+rich = "^13.7.0"
+arrow = "^1.3.0"
+platformdirs = "^4.1.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.1.13"
 pyright = ">=1.1.345"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.ruff]
+target-version = "py312"
+respect-gitignore = true
+# fix = true
+src = ["src/kamuidrone"]
+line-length = 100
+show-source = true
+
+select = [
+    "RUF",
+    "F",
+    "E",
+    "W",
+    "I",
+    "UP",
+    "B",
+    "Q",
+    "YTT",
+    "PYI",
+    "SIM",
+    "RET",
+    "PERF",
+    "PIE",
+    "SIM",
+    "C4",
+
+    # specific docstring rules
+    "D101", "D102", "D103",           # mandate docstrings
+    "D201", "D204", "D211", "D419",   # less ugly docstrings
+]
+ignore = [
+    "W291",
+    "W293",
+]
+
+[tool.ruff.per-file-ignores]
+"tests/test_*" = ["D"]
+
+[tool.ruff.isort]
+combine-as-imports = true
