@@ -1,5 +1,5 @@
 from collections.abc import Iterator, Sequence
-from typing import Literal, NewType, final
+from typing import Literal, NewType, SupportsIndex, final, overload
 
 import attr
 import cattr
@@ -120,7 +120,17 @@ class ProjectSearchResult(Sequence[ProjectInfoFromSearch]):
     def __len__(self) -> int:
         return len(self.hits)
 
-    def __getitem__(self, key: int, /) -> ProjectInfoFromSearch:
+    @overload
+    def __getitem__(self, key: SupportsIndex, /) -> ProjectInfoFromSearch:
+        ...
+
+    @overload
+    def __getitem__(self, key: slice, /) -> Sequence[ProjectInfoFromSearch]:
+        ...
+
+    def __getitem__(
+        self, key: SupportsIndex | slice, /
+    ) -> ProjectInfoFromSearch | Sequence[ProjectInfoFromSearch]:
         return self.hits[key]
 
 
