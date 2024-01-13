@@ -26,6 +26,11 @@ platformdirs = "^4.1.0"
 ruff = ">=0.1.13"
 pyright = ">=1.1.345"
 
+[tool.pyright]
+pythonVersion = "3.12"
+include = ["src"]
+strict = ["src"]
+
 [tool.ruff]
 target-version = "py312"
 respect-gitignore = true
