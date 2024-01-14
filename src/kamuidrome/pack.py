@@ -135,7 +135,7 @@ class LocalPack:
                         ):
                             progress.update(current_task, advance=chunk)
 
-                    progress.update(current_task, completed=True)
+                    progress.update(current_task, completed=selected_file.size)
 
                 self.mods[project.id] = InstalledMod(
                     name=project.title,
