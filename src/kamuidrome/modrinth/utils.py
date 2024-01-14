@@ -65,24 +65,30 @@ def resolve_latest_version(
         title = info.title if isinstance(info, ProjectInfoFromProject) else version.name
 
         if primary_loader in version.loaders:
-            # break here if stable; it's sorted by upload time so unless the author did a silly
-            # and uploaded an older version for the wrong game version, it'll be fine; we got the
-            # newest version for our primary loader.
-            selected_version = version
+            # a bit of trickiness here; if we find a release version for our preferred loader,
+            # that's the version we want to pick *always*.
+            # if we find a non-release version for our non-preferred loader, we only select it
+            # if we haven't selected a release before, then continue on to try and find a release
+            # version.
 
             if version.version_type == "release" or allow_unstable:
+                selected_version = version
                 print(
                     f"[green]selected version[/green] "
                     f"[bold white]{version.version_number}[/bold white] "
                     f"for [bold white]{title}[/bold white]"
                 )
                 break
-            else:  # noqa: RET508
+            elif (  # noqa: RET508
+                selected_version is None
+            ):
+                selected_version = version
                 print(
                     f"[italic yellow]saving fallback version[/italic yellow] "
                     f"[bold white]{version.version_number}[/bold white] ({version.loaders}) "
                     f"for [bold white]{title}[/bold white]"
                 )
+                continue
 
         # only assign if ``secondary_version`` is None, because we don't want to replace it with
         # an older version for no reason.
@@ -112,7 +118,7 @@ def resolve_latest_version(
     if secondary_version is not None:
         title = info.title if isinstance(info, ProjectInfoFromProject) else secondary_version.name
         print(
-            "[green]selected version[/green] "
+            "[green]selected secondary version[/green] "
             f"[bold white]{secondary_version.version_number}[/bold white] "
             f"for [bold white]{title}[/bold white]"
         )
