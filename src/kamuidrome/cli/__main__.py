@@ -86,13 +86,13 @@ def main() -> int:
 
         elif subcommand == "deploy":
             return pack.deploy_modpack(cache, args.INSTANCE)
-        
+
         elif subcommand == "pin":
             return pack.pin(" ".join(args.MOD))
-        
+
         elif subcommand == "download":
             return download_all_mods(pack, api, cache)
-        
+
         elif subcommand == "update":
             return update_all_mods(pack, api, cache)
 

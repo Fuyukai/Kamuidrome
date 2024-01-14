@@ -28,6 +28,7 @@ def download_all_mods(
 
     return 0
 
+
 def update_all_mods(
     pack: LocalPack,
     modrinth: ModrinthApi,

@@ -110,6 +110,12 @@ def resolve_latest_version(
         return selected_version
 
     if secondary_version is not None:
+        title = info.title if isinstance(info, ProjectInfoFromProject) else secondary_version.name
+        print(
+            "[green]selected version[/green] "
+            f"[bold white]{secondary_version.version_number}[/bold white] "
+            f"for [bold white]{title}[/bold white]"
+        )
         return secondary_version
 
     raise ValueError(

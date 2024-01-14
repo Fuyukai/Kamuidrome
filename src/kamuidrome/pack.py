@@ -104,9 +104,11 @@ class LocalPack:
         with Progress() as progress:
             # we do it this way so that they all show up at first, and then
             # the all_mods is at the bottom.
+
             tasks_by_mod = {
                 version.project_id: progress.add_task(
-                    version.name, total=version.primary_file.size,
+                    version.name,
+                    total=version.primary_file.size,
                 )
                 for (project, version) in versions
             }
@@ -124,7 +126,7 @@ class LocalPack:
                         f"[yellow]skipping[/yellow] "
                         f"[bold white]{project.title}[/bold white] download as it exists already"
                     )
-                    
+
                     progress.remove_task(current_task)
                 else:
                     selected_file = version.primary_file
@@ -136,8 +138,8 @@ class LocalPack:
                             progress.update(current_task, advance=chunk)
 
                     progress.update(current_task, completed=selected_file.size)
-                    
-                # ugh, 
+
+                # ugh,
                 if old_metadata is not None and old_metadata.pinned and not pin:
                     print(
                         f"[yellow]not updating[/yellow] "
