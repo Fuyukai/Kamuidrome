@@ -124,8 +124,8 @@ class LocalPack:
                         f"[yellow]skipping[/yellow] "
                         f"[bold white]{project.title}[/bold white] download as it exists already"
                     )
-
-                    progress.update(current_task, completed=progress.tasks[current_task].total)
+                    
+                    progress.remove_task(current_task)
                 else:
                     selected_file = version.primary_file
 
