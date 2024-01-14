@@ -10,6 +10,7 @@ import tomlkit
 
 from kamuidrome.cache import ModCache
 from kamuidrome.cli.add import add_mod_by_project_id, add_mod_by_searching, add_mod_by_version_id
+from kamuidrome.cli.init import interactively_create_pack
 from kamuidrome.cli.update import download_all_mods, update_all_mods
 from kamuidrome.modrinth.client import ModrinthApi
 from kamuidrome.modrinth.models import ProjectId, VersionId
@@ -42,6 +43,11 @@ def main() -> int:
         required=True,
     )
 
+    init_group = subcommands.add_parser("init", help="Initialise a new modpack interactively")
+    init_group.add_argument(
+        "--git", help="Create a Git repository and .gitignore", action="store_true", default=False
+    )
+
     add_mod = subcommands.add_parser("add", help="Adds a new mod")
     add_group = add_mod.add_mutually_exclusive_group(required=True)
     add_group.add_argument(
@@ -69,9 +75,12 @@ def main() -> int:
     cache_dir: Path = args.cache_dir
     cache = ModCache(cache_dir=cache_dir)
 
-    pack = load_local_pack(args.pack_dir)
-
     subcommand: str = args.subcommand
+
+    if subcommand == "init":
+        return interactively_create_pack(args.pack_dir, with_git=args.git)
+
+    pack = load_local_pack(args.pack_dir)
 
     with httpx.Client() as client:
         api = ModrinthApi(client)
