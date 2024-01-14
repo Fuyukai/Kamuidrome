@@ -70,7 +70,19 @@ Adding Local Mods
 ~~~~~~~~~~~~~~~~~
 
 Any mods in the ``mods/`` directory are considered "local mods", and will be ignored by 
-``kamuidrome`` outside of deployments and exporting. You can use this for 
+``kamuidrome`` outside of deployments and exporting. You can use this for mods that aren't available
+on Modrinth (provided you obey copyright requirements).
+
+Sinytra Connector
+~~~~~~~~~~~~~~~~~
+
+When using a ``legacyforge`` or ``neoforge`` pack with ``sinytra_compat`` enabled, all mods with
+a ``fabric`` category will be valid for installation. In the case of mods that have both a Fabric
+and a Forge version available, the Forge version will *always* be selected, even if the Fabric
+version is newer.
+
+Fabric API dependencies will automatically be rewritten to Forgified Fabric API when adding mods
+with the command line. 
 
 Installing Indexed Mods
 -----------------------
