@@ -74,20 +74,33 @@ def add_mod_by_searching(
         return 1
 
     matched = result[0]
-    if not (always_prompt_selection and matched.title.lower() == query.lower()) or len(result) == 1:
-        print(f"[green]successful match[/green]: {matched.title} / {matched.id}")
+
+    # written weirdly to simplify reading the logic rather than trying to unfuck an all().
+    if len(result) == 1:
+        should_auto_match = True
+
+    elif always_prompt_selection:
+        should_auto_match = False
+
+    elif matched.title.lower() == query.lower():
+        should_auto_match = True
 
     else:
+        should_auto_match = False
+
+    if not should_auto_match:
         print("[yellow]No exact match found[/yellow], listing possible options")
 
         for idx, option in enumerate(result):
-            print(rf"[white]\[{idx}][/white] - {option.title}")
+            print(rf"[white]\[{idx}][/white] - [bold white]{option.title}[/bold white]")
 
         option = IntPrompt.ask(
             prompt="Pick an option", show_choices=False, choices=list(map(str, range(len(result))))
         )
 
         matched = result[option]
+    else:
+        print(f"[green]successful match[/green]: {matched.title} / {matched.id}")
 
     return _common_from_project_id(pack, client, cache, matched.id)
 
