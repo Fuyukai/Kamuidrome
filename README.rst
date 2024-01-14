@@ -48,8 +48,7 @@ Modrinth mods can be added to your modpack in one of three ways:
 - Using ``kamuidrome add [-p/--project-id]`` to add the latest version of a specific project, based
   on its *Modrinth project ID*.
 
-- Using ``kamuidrome add [-V/--version-id]`` to add a specific version of a specific project, and
-  automatically pin it.
+- Using ``kamuidrome add [-V/--version-id]`` to add a specific version of a specific project.
 
 When adding a mod, dependencies will be automatically resolved and downloaded if the author has
 provided the appropriate metadata on Modrinth.
@@ -101,6 +100,11 @@ mods in the modpack index and store them in the mod cache.
     Big Globe 3.12.0                  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
     [1.20.1] Fabric API 0.91.0+1.20.1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
     Downloading mods...               ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+
+Listing Indexed Mods
+--------------------
+
+The ``kamuidrone list`` command can be used to list all mods currently installed in the index.
 
 Updating Mods
 -------------
