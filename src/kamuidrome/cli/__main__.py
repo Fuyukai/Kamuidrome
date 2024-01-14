@@ -15,6 +15,7 @@ from kamuidrome.cli.list import list_indexed_mods
 from kamuidrome.cli.update import download_all_mods, update_all_mods
 from kamuidrome.modrinth.client import ModrinthApi
 from kamuidrome.modrinth.models import ProjectId, VersionId
+from kamuidrome.modrinth.mrpack import create_mrpack
 from kamuidrome.pack import load_local_pack
 
 
@@ -80,6 +81,14 @@ def main() -> int:
     subcommands.add_parser(name="download", help="Downloads all mods in the index")
     subcommands.add_parser(name="update", help="Updates all mods and dependenciess in the index")
 
+    export_group = subcommands.add_parser("export", help="Exports pack as an mrpack file")
+    export_group.add_argument(
+        "FILENAME", 
+        help="The name of the file to write", 
+        nargs="?",
+        default=None
+    )
+
     args = parser.parse_args()
     cache_dir: Path = args.cache_dir
     cache = ModCache(cache_dir=cache_dir)
@@ -129,6 +138,17 @@ def main() -> int:
 
         elif subcommand == "list":
             return list_indexed_mods(pack)
+        
+        elif subcommand == "export":
+            export_name: str | None = args.FILENAME
+            if export_name is None:
+                export_path = (Path.cwd() / pack.metadata.name).with_suffix(".mrpack")
+            else:
+                export_path = Path(export_name)
+            
+            create_mrpack(pack, api, export_path)
+            return 0
+            
 
     return 0
 

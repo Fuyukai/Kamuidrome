@@ -49,6 +49,25 @@ class PackLoaderInfo:
             facets.append("categories:neoforge")
 
         return facets
+    
+    @property
+    def mrpack_name(self) -> str:
+        """
+        Returns the ``mrpack`` dependency name for this loader.
+        """
+
+        match self.type:
+            case AvailablePackLoader.FABRIC:
+                return "fabric-loader"
+            
+            case AvailablePackLoader.QUILT:
+                return "quilt-loader"
+            
+            case AvailablePackLoader.LEGACY_FORGE:
+                return "forge"
+            
+            case AvailablePackLoader.NEOFORGE:
+                return "neoforge"
 
 
 @attr.s(slots=True, frozen=True)

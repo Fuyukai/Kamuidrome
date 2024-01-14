@@ -9,7 +9,7 @@ from cattr import Converter, override
 from cattrs.gen._consts import AttributeOverride
 
 type ProjectType = Literal["mod", "modpack", "resourcepack", "shader"]
-type ModSide = Literal["required", "optional", "unsupported"]
+type ModSide = Literal["unknown", "required", "optional", "unsupported"]
 
 # deliberately undocumented because i'm lazy. see the modrinth docs.
 # see client.py for why we need some hackery with cattrs overrides.
@@ -160,6 +160,9 @@ class ProjectVersionFile:
 
     #: The size of the file, in bytes.
     size: int = attr.ib()
+
+    #: Opaque set of hashes in unspecified algorithms.
+    hashes: dict[str, str] = attr.ib()
 
 
 @attr.s(slots=True, frozen=True, kw_only=True)
