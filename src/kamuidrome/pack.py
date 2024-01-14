@@ -103,21 +103,39 @@ class LocalPack:
             all_mods = progress.add_task("[green]Downloading mods...", total=len(versions))
 
             for project, version in versions:
-                # exists_already = cache.get_real_filename(version.project_id, version.id) is None
-                # if exists_already:
-                #    continue
-                selected_file = version.primary_file
-                current_task = progress.add_task(
-                    f"[green]Downloading[/green] "
-                    f"[white]{project.title} {version.version_number}[/white]",
-                    total=selected_file.size,
-                )
+                old_metadata = self.mods.get(project.id)
+                if (
+                    old_metadata is not None
+                    and old_metadata.pinned
+                    and old_metadata.version_id != version.id
+                ):
+                    print(
+                        f"[yellow]skipping[/yellow] "
+                        f"[bold white]{project.title}[/bold white] as it is pinned"
+                    )
+                    progress.update(all_mods, advance=1)
+                    continue
+                exists_already = cache.get_real_filename(version.project_id, version.id) is not None
+                if exists_already:
+                    print(
+                        f"[yellow]skipping[/yellow] "
+                        f"[bold white]{project.title}[/bold white] download as it exists already"
+                    )
+                else:
+                    selected_file = version.primary_file
+                    current_task = progress.add_task(
+                        f"[green]Downloading[/green] "
+                        f"[white]{project.title} {version.version_number}[/white]",
+                        total=selected_file.size,
+                    )
 
-                with api.get_file(selected_file.url) as resp:
-                    for chunk in cache.save_mod_from_response(
-                        resp, version.project_id, version.id, selected_file.filename
-                    ):
-                        progress.update(current_task, advance=chunk)
+                    with api.get_file(selected_file.url) as resp:
+                        for chunk in cache.save_mod_from_response(
+                            resp, version.project_id, version.id, selected_file.filename
+                        ):
+                            progress.update(current_task, advance=chunk)
+
+                    progress.update(current_task, completed=True)
 
                 self.mods[project.id] = InstalledMod(
                     name=project.title,
