@@ -50,6 +50,12 @@ def main() -> int:
     )
 
     add_mod = subcommands.add_parser("add", help="Adds a new mod")
+    add_mod.add_argument(
+        "--always-select",
+        help="Always shows a selection prompt for search",
+        action="store_true",
+        default=False,
+    )
     add_group = add_mod.add_mutually_exclusive_group(required=True)
     add_group.add_argument(
         "-s", "--search", help="Adds a mod by searching for the specified argument", default=None
@@ -91,7 +97,7 @@ def main() -> int:
         if subcommand == "add":
             search_query: str | None = args.search
             if search_query is not None:
-                return add_mod_by_searching(pack, api, cache, search_query)
+                return add_mod_by_searching(pack, api, cache, search_query, args.always_select)
 
             project_id: str | None = args.project_id
             if project_id is not None:

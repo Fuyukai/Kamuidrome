@@ -66,6 +66,7 @@ class ModrinthApi:
         client.headers = {
             "user-agent": f"Mozilla/5.0 (kamuidrome/{VERSION}; https://github.com/Fuyukai/kamuidrome) AppleWebKit/537.3 (KHTML, like Packwiz)"  # noqa: E501
         }
+        client.timeout = 30
 
     def get_project_info(self, project_id: str) -> ProjectInfoFromProject:
         """

@@ -47,9 +47,18 @@ def _common_from_project_id(
     return 0
 
 
-def add_mod_by_searching(pack: LocalPack, client: ModrinthApi, cache: ModCache, query: str) -> int:
+def add_mod_by_searching(
+    pack: LocalPack,
+    client: ModrinthApi,
+    cache: ModCache,
+    query: str,
+    always_prompt_selection: bool,
+) -> int:
     """
     Adds a new mod by searching Modrinth.
+
+    If ``always_prompt_selection`` is passed, then the regular name will be ignored. Useful for
+    CLI search.
     """
 
     result = client.get_projects_via_search(
@@ -65,7 +74,7 @@ def add_mod_by_searching(pack: LocalPack, client: ModrinthApi, cache: ModCache, 
         return 1
 
     matched = result[0]
-    if matched.title.lower() == query.lower() or len(result) == 1:
+    if not (always_prompt_selection and matched.title.lower() == query.lower()) or len(result) == 1:
         print(f"[green]successful match[/green]: {matched.title} / {matched.id}")
 
     else:
