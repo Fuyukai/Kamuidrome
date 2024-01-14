@@ -268,6 +268,31 @@ class LocalPack:
 
         return 0
 
+    def pin(self, mod_name: str) -> int:
+        """
+        Pins a single mod to its currently installed version.
+        """
+
+        try:
+            selected_mod = self.mods[ProjectId(mod_name)]
+        except KeyError:
+            for mod in self.mods.values():
+                if mod.name.lower() == mod_name.lower():
+                    selected_mod = mod
+                    break
+            else:
+                print(f"[red]unknown mod:[/red] [bold white]{mod_name}[/bold white]")
+                return 1
+
+        selected_mod.pinned = True
+        self._write_index()
+
+        print(
+            f"[green]pinned mod[/green] [bold white]{selected_mod.name}[/bold white] "
+            f"to version [bold white]{selected_mod.version}[/bold white]"
+        )
+        return 0
+
 
 def load_local_pack(directory: Path) -> LocalPack:
     """
