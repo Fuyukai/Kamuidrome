@@ -6,7 +6,10 @@ build-backend = "poetry.core.masonry.api"
 name = "kamuidrome"
 version = "0.7.0"
 description = "Modern Minecraft modpack builder"
-authors = ["Lura Skye <l@veriny.tf>"]
+authors = [
+    "Lura Skye <l@veriny.tf>",
+    "Pebbles Dickinson <cat@not.a.real.person>"
+]
 readme = "README.rst"
 packages = [{include = "kamuidrome", from = "src"}]
 license = "GPL-3.0-or-later"
