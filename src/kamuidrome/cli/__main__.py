@@ -2,9 +2,11 @@ import argparse
 import pprint
 import sys
 from pathlib import Path
+from typing import cast
 
 import httpx
 import platformdirs
+import tomlkit
 
 from kamuidrome.cache import ModCache
 from kamuidrome.cli.add import add_mod_by_project_id, add_mod_by_searching, add_mod_by_version_id
@@ -53,7 +55,9 @@ def main() -> int:
     )
 
     deploy_group = subcommands.add_parser("deploy", help="Deploys a modpack")
-    deploy_group.add_argument("INSTANCE", help="The name of the Prism instance to write to")
+    deploy_group.add_argument(
+        "INSTANCE", help="The name of the Prism instance to write to", nargs="?"
+    )
 
     pin_group = subcommands.add_parser(name="pin", help="Pins a mod version to the current version")
     pin_group.add_argument("MOD", nargs="+", help="The mod name or ID to pin")
@@ -85,7 +89,16 @@ def main() -> int:
             add_mod_by_version_id(pack, api, cache, VersionId(version_id))
 
         elif subcommand == "deploy":
-            return pack.deploy_modpack(cache, args.INSTANCE)
+            instance_name: str | None = args.INSTANCE
+            if instance_name is None:
+                try:
+                    localpack = pack.directory / "localpack.toml"
+                    data = tomlkit.loads(localpack.read_text())
+                    instance_name = cast(str, data["instance_name"])
+                except (FileNotFoundError, KeyError):
+                    parser.error("must pass an instance name if not using localpack.toml")
+
+            return pack.deploy_modpack(cache, instance_name)
 
         elif subcommand == "pin":
             return pack.pin(" ".join(args.MOD))
