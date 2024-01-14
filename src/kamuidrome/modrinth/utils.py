@@ -37,7 +37,10 @@ def resolve_latest_version(
     unstable (alpha and beta) versions will be picked.
     """
 
-    project_id = info.id if isinstance(info, ProjectInfoMixin) else info
+    if not isinstance(info, ProjectInfoMixin):
+        info = modrinth.get_project_info(info)
+
+    project_id = info.id
 
     versions = modrinth.get_project_versions(
         project_id=project_id, loaders=pack.available_loaders, game_versions=pack.game_version
@@ -62,7 +65,7 @@ def resolve_latest_version(
 
     # we do a single-pass strategy here using two local variables.
     for version in versions:
-        title = info.title if isinstance(info, ProjectInfoFromProject) else version.name
+        title = info.title
 
         if primary_loader in version.loaders:
             # a bit of trickiness here; if we find a release version for our preferred loader,
