@@ -66,6 +66,9 @@ class PackMetadata:
     #: The minecraft version for this pack.
     game_version: str = attr.ib()
 
+    #: The additional directories to include.
+    include_directories: list[str] = attr.ib()
+
     loader: PackLoaderInfo = attr.ib()
 
     @property

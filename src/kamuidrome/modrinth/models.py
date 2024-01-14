@@ -133,7 +133,8 @@ class ProjectSearchResult(Sequence[ProjectInfoFromSearch]):
 
     @typing.override
     def __getitem__(
-        self, index: int | slice,
+        self,
+        index: int | slice,
     ) -> ProjectInfoFromSearch | Sequence[ProjectInfoFromSearch]:
         return self.hits[index]
 

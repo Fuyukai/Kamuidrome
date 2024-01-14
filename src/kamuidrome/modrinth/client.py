@@ -23,7 +23,7 @@ CONVERTER.register_structure_hook(arrow.Arrow, lambda it, _: arrow.get(it))
 
 ProjectInfoMixin.configure_converter(CONVERTER)
 ProjectVersion.configure_converter(CONVERTER)
-VERSION = metadata.version("kamuidrone")
+VERSION = metadata.version("kamuidrome")
 
 
 # Here's my small Complaining About The Modrinth API section.
@@ -64,7 +64,7 @@ class ModrinthApi:
         self.client = client
         client.base_url = f"https://api.modrinth.com/{self.API_VERSION}"
         client.headers = {
-            "user-agent": f"Mozilla/5.0 (kamuidrone/{VERSION}; https://github.com/Fuyukai/kamuidrone) AppleWebKit/537.3 (KHTML, like Packwiz)"  # noqa: E501
+            "user-agent": f"Mozilla/5.0 (kamuidrome/{VERSION}; https://github.com/Fuyukai/kamuidrome) AppleWebKit/537.3 (KHTML, like Packwiz)"  # noqa: E501
         }
 
     def get_project_info(self, project_id: str) -> ProjectInfoFromProject:

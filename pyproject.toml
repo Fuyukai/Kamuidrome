@@ -15,12 +15,11 @@ license = "GPL-3.0-or-later"
 python = ">=3.12"
 httpx = ">=0.26.0"
 attrs = ">=23.2.0"
-cattrs = {git = "https://github.com/python-attrs/cattrs.git", rev = "385067e2a053b1aa69904285da2147287dab9283"}
-click = ">=8.1.7"
-tomlkit = "^0.12.3"
-rich = "^13.7.0"
-arrow = "^1.3.0"
-platformdirs = "^4.1.0"
+cattrs = {git = "https://github.com/python-attrs/cattrs.git"}
+tomlkit = ">=0.12.3"
+rich = ">=13.7.0"
+arrow = ">=1.3.0"
+platformdirs = ">=4.1.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.1.13"
@@ -38,7 +37,7 @@ reportUnusedVariable = false
 target-version = "py312"
 respect-gitignore = true
 # fix = true
-src = ["src/kamuidrone"]
+src = ["src/kamuidrome"]
 line-length = 100
 show-source = true
 

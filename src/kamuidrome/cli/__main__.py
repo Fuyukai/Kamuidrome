@@ -50,6 +50,9 @@ def main() -> int:
         "-V", "--version-id", help="Adds a mod using the specified version ID", default=None
     )
 
+    deploy_group = subcommands.add_parser("deploy", help="Deploys a modpack")
+    deploy_group.add_argument("INSTANCE", help="The name of the Prism instance to write to")
+
     args = parser.parse_args()
     cache_dir: Path = args.cache_dir
     cache = ModCache(cache_dir=cache_dir)
@@ -67,11 +70,15 @@ def main() -> int:
                 return add_mod_by_searching(pack, api, cache, search_query)
 
             project_id: str | None = args.project_id
+        
+        elif subcommand == "deploy":
+            return pack.deploy_modpack(cache, args.INSTANCE)
 
     return 0
 
 
 if __name__ == "__main__":
+
     def _run():
         try:
             sys.exit(main())

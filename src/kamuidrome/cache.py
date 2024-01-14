@@ -36,6 +36,8 @@ class ModCache:
     def get_mod_path(self, id: ProjectId, version_id: VersionId) -> Path:
         """
         Gets the path to a mod ``.jar`` file.
+
+        This path may or may not exist.
         """
 
         return (self.path / id / version_id).with_suffix(".jar")
@@ -54,10 +56,8 @@ class ModCache:
         Gets the real filename for the provided mod pair, or None if it is an unknown mod/version.
         """
 
-        path = self.path / id / "metadata.json"
         try:
-            content = cattrs.structure(json.loads(path.read_text()), dict[str, ModVersionMetadata])
-            return content[version_id].real_file_name
+            return self._get_metadata(id)[version_id].real_file_name
         except (FileNotFoundError, KeyError):
             return None
 
@@ -77,12 +77,15 @@ class ModCache:
         with (self.path / project_id / "metadata.json").open(mode="w") as f:
             json.dump(cattrs.unstructure(content), f)
 
-    def get_file_checksum(self, project_id: ProjectId, version_id: VersionId) -> str:
+    def get_file_checksum(self, project_id: ProjectId, version_id: VersionId) -> str | None:
         """
-        Gets the file checksum for the provided mod.
+        Gets the file checksum for the provided mod, or None if it is an unknown mod/version.
         """
-
-        return self._get_metadata(project_id)[version_id].blake_hexdigest
+        
+        try:
+            return self._get_metadata(project_id)[version_id].blake_hexdigest
+        except KeyError:
+            return None
 
     def save_mod_from_response(
         self,
