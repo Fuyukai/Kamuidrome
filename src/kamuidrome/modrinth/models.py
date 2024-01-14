@@ -207,6 +207,9 @@ class ProjectVersion:
     #: The number for this version.
     version_number: str = attr.ib()
 
+    #: The game versions for this mod.
+    game_versions: list[str] = attr.ib()
+
     #: If this version is featured or not.
     featured: bool = attr.ib()
 

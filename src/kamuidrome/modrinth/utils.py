@@ -15,9 +15,12 @@ type VersionResult = Sequence[tuple[ProjectInfoMixin, ProjectVersion]]
 
 # Hardcoded Modrinth project IDs used to swap out dependencies easily.
 
+FABRIC_API_VERSION = ProjectId("P7dR8mSH")
+FORGIFIED_API_VERSION = ProjectId("Aqlf1Shp")
+
 DEPENDENCY_SWAPS: dict[ProjectId, ProjectId] = {
     # Fabric API -> Forgified Fabric API
-    ProjectId("P7dR8mSH"): ProjectId("Aqlf1Shp")
+    FABRIC_API_VERSION: FORGIFIED_API_VERSION
 }
 
 

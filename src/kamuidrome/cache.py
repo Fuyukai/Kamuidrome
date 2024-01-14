@@ -81,7 +81,7 @@ class ModCache:
         """
         Gets the file checksum for the provided mod, or None if it is an unknown mod/version.
         """
-        
+
         try:
             return self._get_metadata(project_id)[version_id].blake_hexdigest
         except KeyError:

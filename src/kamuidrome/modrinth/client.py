@@ -142,6 +142,16 @@ class ModrinthApi:
 
         return CONVERTER.structure(resp.json(), list[ProjectInfoFromProject])
 
+    def get_single_version(self, version: VersionId) -> ProjectVersion:
+        """
+        Gets a single version for a project.
+        """
+
+        resp = self.client.get(f"/version/{version}")
+        resp.raise_for_status()
+
+        return CONVERTER.structure(resp.json(), ProjectVersion)
+
     def get_multiple_versions(self, versions: list[VersionId]) -> list[ProjectVersion]:
         """
         Gets multiple versions in one request.

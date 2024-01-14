@@ -139,17 +139,17 @@ class LocalPack:
 
         any_error = False
 
-        for (project_id, mod) in self.mods.items():
+        for project_id, mod in self.mods.items():
             path = cache.get_mod_path(project_id, mod.version_id)
             if not path.exists():
                 print(
-                    f"[red]missing mod:[/red] " 
+                    f"[red]missing mod:[/red] "
                     f"[white]{mod.name}[/white] ([white]{mod.version}[/white])"
                 )
                 any_error = True
 
         return not any_error
-    
+
     def _setup_instance_firsttime(
         self,
         instance_path: Path,
@@ -170,7 +170,7 @@ class LocalPack:
             shutil.rmtree(instance_path / dir, ignore_errors=True)
 
     def deploy_modpack(
-        self, 
+        self,
         cache: ModCache,
         instance_name: str,
     ) -> int:
@@ -179,9 +179,7 @@ class LocalPack:
         """
 
         if not self._validate_downloaded_mods(cache):
-            print(
-                "[red]unable to validate downloaded mods.[/red] try 'kamuidrome download' first."
-            )
+            print("[red]unable to validate downloaded mods.[/red] try 'kamuidrome download' first.")
             return 1
 
         prism_dir = get_prism_instances_directory()
@@ -218,10 +216,8 @@ class LocalPack:
 
             symlink(instance_symlink, potential_dir, is_dir=True)
 
-            print(
-                f"[green]linked included dir[/green] [white]{instance_symlink}[/white]"
-            )
-        
+            print(f"[green]linked included dir[/green] [white]{instance_symlink}[/white]")
+
         # step 3: symlink found mod jar files
         instance_mods_dir = instance_dir / "mods"
         for file in instance_mods_dir.iterdir():
@@ -229,11 +225,11 @@ class LocalPack:
                 continue
 
             mod_symlink = instance_mods_dir / file.name
-            
+
             symlink(mod_symlink, file, is_dir=False)
-            
+
             print(f"[green]linked included mod[/green] [white]{mod_symlink}[/white]")
-        
+
         # step 4: symlink mods from cache
         for mod in self.mods.values():
             actual_file_location = cache.get_mod_path(mod.project_id, mod.version_id)
@@ -244,12 +240,12 @@ class LocalPack:
             symlink(instance_mod_path, actual_file_location.resolve(), is_dir=False)
 
             print(f"[green]linked managed mod[/green] [white]{instance_mod_path}[/white]")
-            
+
         with index_path.open(mode="w") as f:
             json.dump(symlink_index, f)
 
         return 0
-    
+
 
 def load_local_pack(directory: Path) -> LocalPack:
     """

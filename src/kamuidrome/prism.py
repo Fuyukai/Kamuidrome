@@ -56,6 +56,7 @@ def find_minecraft_dir(instances_dir: Path, instance: str):
 
     raise FileNotFoundError(f"Can't find the ``.minecraft`` for {instance_path}")
 
+
 def cleanup_from_index(instance_path: Path, index_path: Path) -> None:
     """
     Cleans up created symlinks from an index file.
@@ -63,10 +64,10 @@ def cleanup_from_index(instance_path: Path, index_path: Path) -> None:
 
     with index_path.open() as f:
         index: list[str] = json.load(f)
-    
+
     for fp in index:
         path = Path(fp)
-        
+
         if not path.exists():
             # ok?
             continue
@@ -74,5 +75,5 @@ def cleanup_from_index(instance_path: Path, index_path: Path) -> None:
         if not path.is_symlink():
             # ok x2?
             continue
-        
+
         path.unlink()
