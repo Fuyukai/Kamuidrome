@@ -141,7 +141,12 @@ class LocalPack:
                 new_checksum = cache.get_file_checksum(version.project_id, version.id)
                 if old_metadata is not None:
                     old_checksum = old_metadata.checksum
-                    if old_checksum != new_checksum:
+
+                    # obviously, we only validate the checksum if we're downloading the same
+                    # version. previously, i forgot to constrain this by version, so it would always
+                    # raise a checksum mismatch if the version was different (and the jar file
+                    # was obviously different).
+                    if old_metadata.version_id == version.id and old_checksum != new_checksum:
                         raise ValueError(
                             "Invalid saved checksum for "
                             f"{project.title} -> {version.version_number}!"
