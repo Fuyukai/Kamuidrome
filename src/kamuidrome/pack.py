@@ -139,6 +139,7 @@ class LocalPack:
                     progress.update(current_task, completed=selected_file.size)
 
                 new_checksum = cache.get_file_checksum(version.project_id, version.id)
+                selected = selected_mod == version.project_id
                 if old_metadata is not None:
                     old_checksum = old_metadata.checksum
 
@@ -160,10 +161,8 @@ class LocalPack:
                         progress.update(all_mods, advance=1)
                         continue
 
-                if selected_mod is None and old_metadata is not None:
-                    selected = old_metadata.selected
-                else:
-                    selected = selected_mod == version.project_id
+                    if not selected:
+                        selected = old_metadata.selected
 
                 self.mods[project.id] = InstalledMod(
                     name=project.title,
