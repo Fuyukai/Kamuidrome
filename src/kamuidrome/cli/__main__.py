@@ -120,7 +120,7 @@ def main() -> int:
 
         elif subcommand == "update":
             return update_all_mods(pack, api, cache)
-        
+
         elif subcommand == "list":
             return list_indexed_mods(pack)
 

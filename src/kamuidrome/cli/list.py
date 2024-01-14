@@ -17,8 +17,8 @@ def _apply_table(table: Table, mods: Iterable[InstalledMod]) -> None:
         pinned_style = "yellow" if not mod.pinned else "green"
         table.add_row(
             Text(mod.name, style="magenta", justify="left"),
-            mod.version, 
-            Text(pinned, justify="right", style=pinned_style)
+            mod.version,
+            Text(pinned, justify="right", style=pinned_style),
         )
 
     print(table)

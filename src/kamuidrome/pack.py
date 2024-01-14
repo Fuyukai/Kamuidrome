@@ -137,12 +137,15 @@ class LocalPack:
                             progress.update(current_task, advance=chunk)
 
                     progress.update(current_task, completed=selected_file.size)
-                
+
                 new_checksum = cache.get_file_checksum(version.project_id, version.id)
                 if old_metadata is not None:
                     old_checksum = old_metadata.checksum
                     if old_checksum != new_checksum:
-                        raise ValueError(f"Invalid saved checksum for {project.title} -> {version.version_number}!")
+                        raise ValueError(
+                            "Invalid saved checksum for "
+                            f"{project.title} -> {version.version_number}!"
+                        )
 
                     if old_metadata.pinned:
                         print(
