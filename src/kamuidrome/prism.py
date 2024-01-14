@@ -68,7 +68,7 @@ def cleanup_from_index(instance_path: Path, index_path: Path) -> None:
     for fp in index:
         path = Path(fp)
 
-        if not path.exists():
+        if not path.exists(follow_symlinks=False):
             # ok?
             continue
 
