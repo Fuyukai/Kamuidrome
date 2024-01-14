@@ -2,3 +2,4 @@
 .venv/
 
 testpack/
+docs/build/
