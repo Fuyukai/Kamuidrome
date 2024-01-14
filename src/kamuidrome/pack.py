@@ -91,7 +91,7 @@ class LocalPack:
         api: ModrinthApi,
         cache: ModCache,
         versions: VersionResult,
-        selected_mod: ProjectId,
+        selected_mod: ProjectId | None,
         pin: bool,
     ) -> None:
         """
@@ -102,35 +102,32 @@ class LocalPack:
         # pin is used to explicitly pin the selected mod.
 
         with Progress() as progress:
+            # we do it this way so that they all show up at first, and then
+            # the all_mods is at the bottom.
+            tasks_by_mod = {
+                version.project_id: progress.add_task(
+                    version.name, total=version.primary_file.size,
+                )
+                for (project, version) in versions
+            }
+
             all_mods = progress.add_task("[green]Downloading mods...", total=len(versions))
 
             for project, version in versions:
                 old_metadata = self.mods.get(project.id)
-                if (
-                    old_metadata is not None
-                    and old_metadata.pinned
-                    and old_metadata.version_id != version.id
-                ) and not (pin and project.id == selected_mod):
-                    print(
-                        f"[yellow]skipping[/yellow] "
-                        f"[bold white]{project.title}[/bold white] as it is pinned"
-                    )
-                    progress.update(all_mods, advance=1)
-                    continue
-
                 exists_already = cache.get_real_filename(version.project_id, version.id) is not None
+
+                current_task = tasks_by_mod[version.project_id]
+
                 if exists_already:
                     print(
                         f"[yellow]skipping[/yellow] "
                         f"[bold white]{project.title}[/bold white] download as it exists already"
                     )
+
+                    progress.update(current_task, completed=progress.tasks[current_task].total)
                 else:
                     selected_file = version.primary_file
-                    current_task = progress.add_task(
-                        f"[green]Downloading[/green] "
-                        f"[white]{project.title} {version.version_number}[/white]",
-                        total=selected_file.size,
-                    )
 
                     with api.get_file(selected_file.url) as resp:
                         for chunk in cache.save_mod_from_response(
@@ -139,6 +136,20 @@ class LocalPack:
                             progress.update(current_task, advance=chunk)
 
                     progress.update(current_task, completed=selected_file.size)
+                    
+                # ugh, 
+                if old_metadata is not None and old_metadata.pinned and not pin:
+                    print(
+                        f"[yellow]not updating[/yellow] "
+                        f"[bold white]{project.title}[/bold white] metadata as it is pinned"
+                    )
+                    progress.update(all_mods, advance=1)
+                    continue
+
+                if selected_mod is None and old_metadata is not None:
+                    selected = old_metadata.selected
+                else:
+                    selected = selected_mod == version.project_id
 
                 self.mods[project.id] = InstalledMod(
                     name=project.title,
@@ -146,7 +157,7 @@ class LocalPack:
                     version=version.version_number,
                     version_id=version.id,
                     checksum=cast(str, cache.get_file_checksum(version.project_id, version.id)),
-                    selected=selected_mod == version.project_id,
+                    selected=selected,
                     pinned=pin,
                 )
 

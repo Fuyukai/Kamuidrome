@@ -8,6 +8,7 @@ import platformdirs
 
 from kamuidrome.cache import ModCache
 from kamuidrome.cli.add import add_mod_by_project_id, add_mod_by_searching, add_mod_by_version_id
+from kamuidrome.cli.update import download_all_mods, update_all_mods
 from kamuidrome.modrinth.client import ModrinthApi
 from kamuidrome.modrinth.models import ProjectId, VersionId
 from kamuidrome.pack import load_local_pack
@@ -57,6 +58,9 @@ def main() -> int:
     pin_group = subcommands.add_parser(name="pin", help="Pins a mod version to the current version")
     pin_group.add_argument("MOD", nargs="+", help="The mod name or ID to pin")
 
+    subcommands.add_parser(name="download", help="Downloads all mods in the index")
+    subcommands.add_parser(name="update", help="Updates all mods and dependenciess in the index")
+
     args = parser.parse_args()
     cache_dir: Path = args.cache_dir
     cache = ModCache(cache_dir=cache_dir)
@@ -85,6 +89,12 @@ def main() -> int:
         
         elif subcommand == "pin":
             return pack.pin(" ".join(args.MOD))
+        
+        elif subcommand == "download":
+            return download_all_mods(pack, api, cache)
+        
+        elif subcommand == "update":
+            return update_all_mods(pack, api, cache)
 
     return 0
 
