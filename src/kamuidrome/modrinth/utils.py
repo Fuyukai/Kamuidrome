@@ -73,15 +73,15 @@ def resolve_latest_version(
             if version.version_type == "release" or allow_unstable:
                 print(
                     f"[green]selected version[/green] "
-                    f"[bold green]{version.version_number}[/bold green] "
-                    f"for [green]{title}[/green]"
+                    f"[bold white]{version.version_number}[/bold white] "
+                    f"for [bold white]{title}[/bold white]"
                 )
                 break
             else:  # noqa: RET508
                 print(
                     f"[italic yellow]saving fallback version[/italic yellow] "
-                    f"[bold green]{version.version_number}[/bold green] ({version.loaders}) "
-                    f"for [green]{title}[/green]"
+                    f"[bold white]{version.version_number}[/bold wwhite] ({version.loaders}) "
+                    f"for [bold white]{title}[/bold white]"
                 )
 
         # only assign if ``secondary_version`` is None, because we don't want to replace it with
@@ -95,15 +95,15 @@ def resolve_latest_version(
         ):
             print(
                 f"[italic yellow]saving fallback version[/italic yellow] "
-                f"[bold green]{version.version_number}[/bold green] ({version.loaders}) "
-                f"for [green]{title}[/green]"
+                f"[bold white]{version.version_number}[/bold white] ({version.loaders}) "
+                f"for [bold white]{title}[/bold white]"
             )
             # never break here; there might be a primary version coming *after* this one.
             secondary_version = version
         else:
             print(
-                f"[yellow]rejected version[/yellow] [red]{version.version_number}[/red] "
-                f"for [green]{title}[/green]"
+                f"[red]rejected version[/red] [bold white]{version.version_number}[/bold white] "
+                f"for [bold white]{title}[/bold white]"
             )
 
     if selected_version is not None:
