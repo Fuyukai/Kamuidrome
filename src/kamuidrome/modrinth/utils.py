@@ -17,6 +17,7 @@ type VersionResult = Sequence[tuple[ProjectInfoMixin, ProjectVersion]]
 
 FABRIC_API_VERSION = ProjectId("P7dR8mSH")
 FORGIFIED_API_VERSION = ProjectId("Aqlf1Shp")
+GECKOLIB_API_ID = ProjectId("8BmcQJ2H")
 
 DEPENDENCY_SWAPS: dict[ProjectId, ProjectId] = {
     # Fabric API -> Forgified Fabric API
@@ -58,10 +59,17 @@ def resolve_latest_version(
     selected_version: ProjectVersion | None = None
     secondary_version: ProjectVersion | None = None
 
-    primary_loader = pack.available_loaders[0]
+    primary_loader: str
     secondary_loader: str | None = None
-    if len(pack.available_loaders) == 2:
-        secondary_loader = pack.available_loaders[1]
+
+    if project_id == ProjectId("8BmcQJ2H") and pack.loader.sinytra_compat:
+        print("[bold yellow]forcing geckolib onto fabric...[/bold yellow]")
+        primary_loader = "fabric"
+    else:
+        primary_loader = pack.available_loaders[0]
+
+        if len(pack.available_loaders) == 2:
+            secondary_loader = pack.available_loaders[1]
 
     # we do a single-pass strategy here using two local variables.
     for version in versions:
