@@ -1,6 +1,10 @@
 Kamuidrome
 ==========
 
+.. image:: demo.gif
+    :alt: Demo asciinema
+    :target: https://asciinema.org/a/emNSBAOMSGAwgsCxsh6Fovmw7
+
 Kamuidrome is a Minecraft modpack creation helper that integrates directly with Prism Launcher.
 Kamuidrome is currently geared entirely towards modpack developers, *not* modpack users. Modpack
 users should use the exported ``mrpack`` packs instead.
@@ -142,6 +146,7 @@ example, you can edit configurations in-game and have the changes saved to your 
 directory in your pack without needing to synchronise.
 
 ::
+
     $ kamuidrome deploy "test pack"
     cleaning up symlinks from index...
     linked included dir /home/lura/.local/share/PrismLauncher/instances/test pack/.minecraft/config
