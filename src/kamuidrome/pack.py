@@ -106,7 +106,7 @@ class LocalPack:
 
             tasks_by_mod = {
                 version.project_id: progress.add_task(
-                    version.name,
+                    description=f"{project.title} {version.version_number}",
                     total=version.primary_file.size,
                 )
                 for (project, version) in versions
