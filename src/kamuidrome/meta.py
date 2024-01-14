@@ -37,7 +37,7 @@ class PackLoaderInfo:
         """
 
         if self.type == AvailablePackLoader.FABRIC or self.type == AvailablePackLoader.QUILT:
-            return [f"categories:{self.type}"]
+            return [f"categories:{self.type.value}"]
 
         facets: list[str] = []
         if self.sinytra_compat:
