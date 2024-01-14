@@ -4,9 +4,14 @@ from rich import print
 
 from kamuidrome.meta import PackMetadata
 from kamuidrome.modrinth.client import ModrinthApi
-from kamuidrome.modrinth.models import ProjectId, ProjectInfoFromProject, ProjectVersion
+from kamuidrome.modrinth.models import (
+    ProjectId,
+    ProjectInfoFromProject,
+    ProjectInfoMixin,
+    ProjectVersion,
+)
 
-type VersionResult = Sequence[tuple[ProjectInfoFromProject, ProjectVersion]]
+type VersionResult = Sequence[tuple[ProjectInfoMixin, ProjectVersion]]
 
 # Hardcoded Modrinth project IDs used to swap out dependencies easily.
 
@@ -19,7 +24,7 @@ DEPENDENCY_SWAPS: dict[ProjectId, ProjectId] = {
 def resolve_latest_version(
     pack: PackMetadata,
     modrinth: ModrinthApi,
-    info: ProjectInfoFromProject | ProjectId,
+    info: ProjectInfoMixin | ProjectId,
     allow_unstable: bool = False,
 ) -> ProjectVersion:
     """
@@ -29,7 +34,7 @@ def resolve_latest_version(
     unstable (alpha and beta) versions will be picked.
     """
 
-    project_id = info.id if isinstance(info, ProjectInfoFromProject) else info
+    project_id = info.id if isinstance(info, ProjectInfoMixin) else info
 
     versions = modrinth.get_project_versions(
         project_id=project_id, loaders=pack.available_loaders, game_versions=pack.game_version

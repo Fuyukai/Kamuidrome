@@ -1,10 +1,35 @@
+import httpx
 from rich import print
 from rich.prompt import IntPrompt
 
 from kamuidrome.cache import ModCache
 from kamuidrome.modrinth.client import ModrinthApi
+from kamuidrome.modrinth.models import ProjectId, ProjectInfoMixin
 from kamuidrome.modrinth.utils import resolve_dependency_versions, resolve_latest_version
 from kamuidrome.pack import LocalPack
+
+
+def _common_from_project_id(
+    pack: LocalPack, client: ModrinthApi, cache: ModCache, 
+    project_id: ProjectId | ProjectInfoMixin,
+) -> int:
+    """
+    Common code for any path that uses a project ID.
+    """
+
+    if isinstance(project_id, ProjectInfoMixin):
+        project_info = project_id
+    else:
+        project_info = client.get_project_info(project_id)
+
+    version = resolve_latest_version(pack.metadata, client, project_info)
+    all_versions = [
+        (project_info, version),
+        *resolve_dependency_versions(pack.metadata, client, version),
+    ]
+    pack.download_and_add_mods(client, cache, all_versions, selected_mod=project_info.id)
+
+    return 0
 
 
 def add_mod_by_searching(pack: LocalPack, client: ModrinthApi, cache: ModCache, query: str) -> int:
@@ -39,13 +64,24 @@ def add_mod_by_searching(pack: LocalPack, client: ModrinthApi, cache: ModCache, 
         )
 
         matched = result[option]
+    
+    return _common_from_project_id(pack, client, cache, matched.id)
 
-    project_info = client.get_project_info(matched.id)
-    version = resolve_latest_version(pack.metadata, client, project_info)
-    all_versions = [
-        (project_info, version),
-        *resolve_dependency_versions(pack.metadata, client, version),
-    ]
-    pack.download_and_add_mods(client, cache, all_versions, selected_mod=project_info.id)
 
-    return 0
+def add_mod_by_project_id(
+    pack: LocalPack, client: ModrinthApi, cache: ModCache, project_id: ProjectId
+) -> int:
+    """
+    Adds a new mod by project ID.
+    """
+
+    try:
+        result = client.get_project_info(project_id)
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 404:
+            print("[red]error:[/red] no such project found")
+            return 1
+        
+        raise
+
+    return _common_from_project_id(pack, client, cache, result)

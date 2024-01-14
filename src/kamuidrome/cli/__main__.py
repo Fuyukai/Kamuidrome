@@ -7,8 +7,9 @@ import httpx
 import platformdirs
 
 from kamuidrome.cache import ModCache
-from kamuidrome.cli.add import add_mod_by_searching
+from kamuidrome.cli.add import add_mod_by_project_id, add_mod_by_searching
 from kamuidrome.modrinth.client import ModrinthApi
+from kamuidrome.modrinth.models import ProjectId
 from kamuidrome.pack import load_local_pack
 
 
@@ -70,6 +71,8 @@ def main() -> int:
                 return add_mod_by_searching(pack, api, cache, search_query)
 
             project_id: str | None = args.project_id
+            if project_id is not None:
+                return add_mod_by_project_id(pack, api, cache, ProjectId(project_id))
         
         elif subcommand == "deploy":
             return pack.deploy_modpack(cache, args.INSTANCE)

@@ -42,6 +42,9 @@ class ProjectInfoMixin:
                 ),
             )
 
+    #: The ID of this project.
+    id: ProjectId
+
     #: The project's URL slug.
     slug: str = attr.ib()
     #: The human-readable title for the project.
