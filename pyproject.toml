@@ -25,6 +25,14 @@ platformdirs = ">=4.1.0"
 ruff = ">=0.1.13"
 pyright = ">=1.1.345"
 
+[tool.poetry.group.docs.dependencies]
+sphinx = ">=7.2.6"
+sphinx-rtd-theme = ">=2.0.0"
+sphinx-inline-tabs = ">=2023.4.21"
+
+[tool.poetry.scripts]
+kamuidrome = "kamuidrome.cli.__main__:main"
+
 [tool.pyright]
 pythonVersion = "3.12"
 include = ["src"]

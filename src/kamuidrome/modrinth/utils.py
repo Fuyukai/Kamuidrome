@@ -80,7 +80,7 @@ def resolve_latest_version(
             else:  # noqa: RET508
                 print(
                     f"[italic yellow]saving fallback version[/italic yellow] "
-                    f"[bold white]{version.version_number}[/bold wwhite] ({version.loaders}) "
+                    f"[bold white]{version.version_number}[/bold white] ({version.loaders}) "
                     f"for [bold white]{title}[/bold white]"
                 )
 
