@@ -92,12 +92,14 @@ class LocalPack:
         cache: ModCache,
         versions: VersionResult,
         selected_mod: ProjectId,
+        pin: bool,
     ) -> None:
         """
         Downloads all of the provided mods and adds them to this pack's index.
         """
 
         # selected_mod is used for setting InstalledMod's explicit selection parameter.
+        # pin is used to explicitly pin the selected mod.
 
         with Progress() as progress:
             all_mods = progress.add_task("[green]Downloading mods...", total=len(versions))
@@ -108,13 +110,14 @@ class LocalPack:
                     old_metadata is not None
                     and old_metadata.pinned
                     and old_metadata.version_id != version.id
-                ):
+                ) and not (pin and project.id == selected_mod):
                     print(
                         f"[yellow]skipping[/yellow] "
                         f"[bold white]{project.title}[/bold white] as it is pinned"
                     )
                     progress.update(all_mods, advance=1)
                     continue
+
                 exists_already = cache.get_real_filename(version.project_id, version.id) is not None
                 if exists_already:
                     print(
@@ -144,6 +147,7 @@ class LocalPack:
                     version_id=version.id,
                     checksum=cast(str, cache.get_file_checksum(version.project_id, version.id)),
                     selected=selected_mod == version.project_id,
+                    pinned=pin,
                 )
 
                 progress.update(all_mods, advance=1)
