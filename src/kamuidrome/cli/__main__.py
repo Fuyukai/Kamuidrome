@@ -11,6 +11,7 @@ import tomlkit
 from kamuidrome.cache import ModCache
 from kamuidrome.cli.add import add_mod_by_project_id, add_mod_by_searching, add_mod_by_version_id
 from kamuidrome.cli.init import interactively_create_pack
+from kamuidrome.cli.list import list_indexed_mods
 from kamuidrome.cli.update import download_all_mods, update_all_mods
 from kamuidrome.modrinth.client import ModrinthApi
 from kamuidrome.modrinth.models import ProjectId, VersionId
@@ -68,6 +69,8 @@ def main() -> int:
     pin_group = subcommands.add_parser(name="pin", help="Pins a mod version to the current version")
     pin_group.add_argument("MOD", nargs="+", help="The mod name or ID to pin")
 
+    subcommands.add_parser(name="list", help="List indexed mods")
+
     subcommands.add_parser(name="download", help="Downloads all mods in the index")
     subcommands.add_parser(name="update", help="Updates all mods and dependenciess in the index")
 
@@ -117,6 +120,9 @@ def main() -> int:
 
         elif subcommand == "update":
             return update_all_mods(pack, api, cache)
+        
+        elif subcommand == "list":
+            return list_indexed_mods(pack)
 
     return 0
 

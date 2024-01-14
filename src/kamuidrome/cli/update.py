@@ -24,7 +24,7 @@ def download_all_mods(
     versions = modrinth.get_multiple_versions([v.version_id for v in pack.mods.values()])
     all_versions = list(zip(projects, versions, strict=True))
 
-    pack.download_and_add_mods(modrinth, cache, all_versions, selected_mod=None, pin=False)
+    pack.download_and_add_mods(modrinth, cache, all_versions, selected_mod=None)
 
     return 0
 
@@ -63,6 +63,6 @@ def update_all_mods(
 
         to_download.append((info, version))
 
-    pack.download_and_add_mods(modrinth, cache, to_download, selected_mod=None, pin=False)
+    pack.download_and_add_mods(modrinth, cache, to_download, selected_mod=None)
 
     return 0

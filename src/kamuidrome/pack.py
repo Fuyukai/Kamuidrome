@@ -92,7 +92,6 @@ class LocalPack:
         cache: ModCache,
         versions: VersionResult,
         selected_mod: ProjectId | None,
-        pin: bool,
     ) -> None:
         """
         Downloads all of the provided mods and adds them to this pack's index.
@@ -140,7 +139,7 @@ class LocalPack:
                     progress.update(current_task, completed=selected_file.size)
 
                 # ugh,
-                if old_metadata is not None and old_metadata.pinned and not pin:
+                if old_metadata is not None and old_metadata.pinned:
                     print(
                         f"[yellow]not updating[/yellow] "
                         f"[bold white]{project.title}[/bold white] metadata as it is pinned"
@@ -160,7 +159,7 @@ class LocalPack:
                     version_id=version.id,
                     checksum=cast(str, cache.get_file_checksum(version.project_id, version.id)),
                     selected=selected,
-                    pinned=pin,
+                    pinned=False,
                 )
 
                 progress.update(all_mods, advance=1)

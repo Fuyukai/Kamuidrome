@@ -42,7 +42,7 @@ def _common_from_project_id(
         (project_info, version),
         *resolve_dependency_versions(pack.metadata, client, version),
     ]
-    pack.download_and_add_mods(client, cache, all_versions, selected_mod=project_info.id, pin=False)
+    pack.download_and_add_mods(client, cache, all_versions, selected_mod=project_info.id)
 
     return 0
 
@@ -138,6 +138,6 @@ def add_mod_by_version_id(
         (project_info, found_version),
         *resolve_dependency_versions(pack.metadata, client, found_version),
     ]
-    pack.download_and_add_mods(client, cache, all_versions, selected_mod=project_info.id, pin=True)
+    pack.download_and_add_mods(client, cache, all_versions, selected_mod=project_info.id)
 
     return 0
