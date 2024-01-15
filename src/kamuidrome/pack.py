@@ -265,13 +265,13 @@ class LocalPack:
             print(f"[green]linked included dir[/green] [white]{instance_symlink}[/white]")
 
         # step 3: symlink found mod jar files
-        instance_mods_dir = our_base_dir / "mods"
-        for file in instance_mods_dir.iterdir():
+        our_mods_dir = our_base_dir / "mods"
+        instance_mods_dir = instance_dir / "mods"
+        for file in our_mods_dir.iterdir():
             if file.suffix != ".jar":
                 continue
 
             mod_symlink = instance_mods_dir / file.name
-
             symlink(mod_symlink, file, is_dir=False)
 
             print(f"[green]linked included mod[/green] [white]{mod_symlink}[/white]")
