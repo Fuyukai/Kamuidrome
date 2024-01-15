@@ -17,11 +17,15 @@ type VersionResult = Sequence[tuple[ProjectInfoMixin, ProjectVersion]]
 
 FABRIC_API_VERSION = ProjectId("P7dR8mSH")
 FORGIFIED_API_VERSION = ProjectId("Aqlf1Shp")
+MODMENU_API_ID = ProjectId("mOgUt4GM")
+CONNECTOR_EXTRAS_ID = ProjectId("FYpiwiBR")
+FORGE_CONFIG_PORT_ID = ProjectId("ohNO6lps")
 GECKOLIB_API_ID = ProjectId("8BmcQJ2H")
 
 DEPENDENCY_SWAPS: dict[ProjectId, ProjectId] = {
-    # Fabric API -> Forgified Fabric API
-    FABRIC_API_VERSION: FORGIFIED_API_VERSION
+    FABRIC_API_VERSION: FORGIFIED_API_VERSION,
+    MODMENU_API_ID: CONNECTOR_EXTRAS_ID,
+    FORGE_CONFIG_PORT_ID: CONNECTOR_EXTRAS_ID,
 }
 
 
