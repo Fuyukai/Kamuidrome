@@ -84,7 +84,7 @@ class LocalPack:
         serialised = cattrs.unstructure(self.mods)
 
         with mod_index.open(mode="w") as f:
-            json.dump(serialised, f, indent=4)
+            json.dump(serialised, f, indent=4, sort_keys=True)
 
     def download_and_add_mods(
         self,
