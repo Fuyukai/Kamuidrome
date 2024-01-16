@@ -39,6 +39,7 @@ def update_all_mods(
     """
 
     all_versions: VersionResult = []
+    deps_seen: set[ProjectId] = set()
 
     with Progress() as progress:
         task = progress.add_task("Fetching mod info", total=len(pack.mods))
@@ -48,7 +49,10 @@ def update_all_mods(
         for mod in projects:
             latest_version = resolve_latest_version(pack.metadata, modrinth, mod)
             all_versions.append((mod, latest_version))
-            all_versions += resolve_dependency_versions(pack.metadata, modrinth, latest_version)
+            all_versions += resolve_dependency_versions(
+                pack.metadata, modrinth, latest_version,
+                _seen=deps_seen
+            )
             progress.advance(task, 1)
 
     # de-duplicate downloads

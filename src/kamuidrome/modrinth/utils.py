@@ -180,13 +180,15 @@ def resolve_dependency_versions(
     pack: PackMetadata,
     modrinth: ModrinthApi,
     selected_version: ProjectVersion,
+    _seen: set[ProjectId] | None = None
 ) -> VersionResult:
     """
     Recursively resolves the dependency versions of the provided selected version.
     """
 
     dependencies = get_set_of_dependencies(pack, selected_version)
-    seen: set[ProjectId] = set()
+
+    seen: set[ProjectId] = _seen if _seen is not None else set()
 
     resolved: list[ProjectVersion] = []
 
