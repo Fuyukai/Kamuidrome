@@ -144,7 +144,7 @@ def main() -> int:
             if export_name is None:
                 export_path = (Path.cwd() / pack.metadata.name).with_suffix(".mrpack")
             else:
-                export_path = Path(export_name)
+                export_path = Path(export_name).with_suffix(".mrpack")
 
             create_mrpack(pack, api, export_path)
             return 0

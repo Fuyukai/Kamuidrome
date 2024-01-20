@@ -154,6 +154,8 @@ def create_mrpack(
             real_dir = (pack.directory / to_copy_dir).resolve()
             shutil.copytree(real_dir, tmpdir_path / to_copy_dir)
 
+        actual_file = output.with_suffix(".zip")
         make_archive(tmpdir_path, output)
+        actual_file.rename(output)
 
     return output
