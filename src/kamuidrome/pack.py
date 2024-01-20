@@ -11,7 +11,7 @@ from rich.progress import Progress
 from tomlkit import load as toml_load
 
 from kamuidrome.cache import ModCache
-from kamuidrome.meta import PackMetadata
+from kamuidrome.meta import LocalMetadata, PackMetadata
 from kamuidrome.modrinth.client import ModrinthApi
 from kamuidrome.modrinth.models import ProjectId, VersionId
 from kamuidrome.modrinth.utils import VersionResult
@@ -215,11 +215,7 @@ class LocalPack:
         for dir in self.metadata.include_directories:
             shutil.rmtree(instance_path / dir, ignore_errors=True)
 
-    def deploy_modpack(
-        self,
-        cache: ModCache,
-        instance_name: str,
-    ) -> int:
+    def deploy_modpack(self, cache: ModCache, localmeta: LocalMetadata) -> int:
         """
         Deploys a modpack to the specified Prism Launcher instance.
         """
@@ -229,7 +225,7 @@ class LocalPack:
             return 1
 
         prism_dir = get_prism_instances_directory()
-        instance_dir = find_minecraft_dir(prism_dir, instance_name)
+        instance_dir = find_minecraft_dir(prism_dir, localmeta.instance_name)
         instance_dir = instance_dir.resolve()
 
         index_path = instance_dir / "kamuidrome.json"
@@ -286,6 +282,16 @@ class LocalPack:
             symlink(instance_mod_path, actual_file_location.resolve(), is_dir=False)
 
             print(f"[green]linked managed mod[/green] [white]{instance_mod_path}[/white]")
+
+        # step 5: symlink local directories
+        for extra_dir in localmeta.extra_symlinked_dirs:
+            our_extra_dir = (our_base_dir / extra_dir).resolve()
+            if not our_extra_dir.exists():
+                continue
+
+            their_extra_dir = instance_dir / extra_dir
+            symlink(their_extra_dir, our_extra_dir, is_dir=True)
+            print(f"[green]linked extra dir[/green] [white]{our_extra_dir}[/white]")
 
         with index_path.open(mode="w") as f:
             json.dump(symlink_index, f)

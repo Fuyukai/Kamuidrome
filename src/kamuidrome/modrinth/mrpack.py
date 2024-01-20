@@ -45,7 +45,7 @@ def _parse_forge_version(
         for i in requires:
             if i["uid"] == "net.minecraft" and i["equals"] == game_version:
                 return version
-    
+
     raise ValueError("Couldn't find a valid legacyforge version!")
 
 
@@ -62,17 +62,15 @@ def select_latest_loader_version(
             result.raise_for_status()
             body: list[dict[str, Any]] = result.json()
 
-            return more_itertools.first(
-                filter(lambda it: it["stable"] is True, body)
-            )["version"]
-    
+            return more_itertools.first(filter(lambda it: it["stable"] is True, body))["version"]
+
         case AvailablePackLoader.QUILT:
             result = client.get("https://meta.quiltmc.org/v3/versions/loader")
             result.raise_for_status()
             body: list[dict[str, Any]] = result.json()
-            
+
             return body[0]["version"]
-        
+
         case AvailablePackLoader.LEGACY_FORGE:
             result = client.get("https://meta.prismlauncher.org/v1/net.minecraftforge")
             result.raise_for_status()
@@ -92,7 +90,9 @@ def make_archive(source: Path, destination: Path) -> None:
 
     base_name = destination.parent / destination.stem
     shutil.make_archive(
-        str(base_name), "zip", root_dir=str(source),
+        str(base_name),
+        "zip",
+        root_dir=str(source),
     )
 
 
@@ -106,7 +106,7 @@ def create_mrpack(
     """
 
     # initially i tried writing directly to the zipfilee, but python ``zipfile`` is an evil module
-    # that sucks (i miss java.nio). 
+    # that sucks (i miss java.nio).
     # so instead we just make a temporary directory and use ``shutil.make_archive``.
 
     with tempfile.TemporaryDirectory() as dir:
@@ -118,38 +118,37 @@ def create_mrpack(
         loader_version = pack.metadata.loader.version
         if loader_version is None:
             loader_version = select_latest_loader_version(
-                api.client, pack.metadata.game_version, pack.metadata.loader.type,
+                api.client,
+                pack.metadata.game_version,
+                pack.metadata.loader.type,
             )
 
         files_struct: list[dict[str, Any]] = []
         index = {
-            "formatVersion": 1, 
-            "game": "minecraft", 
+            "formatVersion": 1,
+            "game": "minecraft",
             "versionId": pack.metadata.version,
             "dependencies": {
                 "minecraft": pack.metadata.game_version,
-                pack.metadata.loader.mrpack_name: loader_version
+                pack.metadata.loader.mrpack_name: loader_version,
             },
             "files": files_struct,
         }
 
-        # versions in this case means the indexed mods. 
+        # versions in this case means the indexed mods.
         for version_file in files:
             body = {
                 "path": f"mods/{version_file.filename}",
                 "hashes": version_file.hashes,
                 "downloads": [version_file.url],
-                "fileSize": version_file.size
+                "fileSize": version_file.size,
             }
             files_struct.append(body)
 
-        
         with (tmpdir_path / "modrinth.index.json").open(mode="w") as f:
             json.dump(index, f)
 
-        directories = [
-            "config", "mods", *pack.metadata.include_directories
-        ]
+        directories = ["config", "mods", *pack.metadata.include_directories]
 
         for to_copy_dir in directories:
             real_dir = (pack.directory / to_copy_dir).resolve()

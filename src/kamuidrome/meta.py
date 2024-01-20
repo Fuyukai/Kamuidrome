@@ -49,7 +49,7 @@ class PackLoaderInfo:
             facets.append("categories:neoforge")
 
         return facets
-    
+
     @property
     def mrpack_name(self) -> str:
         """
@@ -59,18 +59,18 @@ class PackLoaderInfo:
         match self.type:
             case AvailablePackLoader.FABRIC:
                 return "fabric-loader"
-            
+
             case AvailablePackLoader.QUILT:
                 return "quilt-loader"
-            
+
             case AvailablePackLoader.LEGACY_FORGE:
                 return "forge"
-            
+
             case AvailablePackLoader.NEOFORGE:
                 return "neoforge"
 
 
-@attr.s(slots=True, frozen=True)
+@attr.s(slots=True, frozen=True, kw_only=True)
 class PackMetadata:
     """
     Base definition for a pack file.
@@ -114,3 +114,16 @@ class PackMetadata:
 
             case AvailablePackLoader.NEOFORGE:
                 return ("neoforge",)
+
+
+@attr.s(slots=True, kw_only=True)
+class LocalMetadata:
+    """
+    Wrapper for the data within the ``localpack.toml``.
+    """
+
+    #: The name of the instance to deploy to automatically.
+    instance_name: str = attr.ib()
+
+    #: Extra directories to symlink, but not to include.
+    extra_symlinked_dirs: list[str] = attr.ib(factory=list)

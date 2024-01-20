@@ -50,8 +50,7 @@ def update_all_mods(
             latest_version = resolve_latest_version(pack.metadata, modrinth, mod)
             all_versions.append((mod, latest_version))
             all_versions += resolve_dependency_versions(
-                pack.metadata, modrinth, latest_version,
-                _seen=deps_seen
+                pack.metadata, modrinth, latest_version, _seen=deps_seen
             )
             progress.advance(task, 1)
 
