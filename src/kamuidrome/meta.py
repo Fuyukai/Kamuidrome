@@ -30,6 +30,9 @@ class PackLoaderInfo:
     #: Forgified Fabric API as Fabric API for dependency purposes.
     sinytra_compat: bool = attr.ib(default=False)
 
+    #: Hack to work around geckolib issues.
+    prefer_fabric_geckolib: bool = attr.ib(default=True)
+
     @property
     def modrinth_facets(self) -> list[str]:
         """

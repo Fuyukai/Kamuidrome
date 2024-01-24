@@ -66,7 +66,9 @@ def resolve_latest_version(
     primary_loader: str
     secondary_loader: str | None = None
 
-    if project_id == ProjectId("8BmcQJ2H") and pack.loader.sinytra_compat:
+    if project_id == ProjectId("8BmcQJ2H") and (
+        pack.loader.sinytra_compat and pack.loader.prefer_fabric_geckolib
+    ):
         print("[bold yellow]forcing geckolib onto fabric...[/bold yellow]")
         primary_loader = "fabric"
     else:
