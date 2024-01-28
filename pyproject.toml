@@ -14,7 +14,10 @@ readme = "README.rst"
 packages = [{include = "kamuidrome", from = "src"}]
 license = "GPL-3.0-or-later"
 classifiers = [
-
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Topic :: Games/Entertainment",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)"
 ]
 
 [tool.poetry.dependencies]
@@ -26,11 +29,11 @@ rich = ">=13.7.0"
 arrow = ">=1.3.0"
 platformdirs = ">=4.1.0"
 more-itertools = ">=10.2.0"
-cattrs = "^23.2.3"
+cattrs = ">=23.2.3"
 
 [tool.poetry.group.dev.dependencies]
-ruff = ">=0.1.13"
-pyright = ">=1.1.345"
+ruff = ">=0.1.14"
+pyright = ">=1.1.348"
 
 [tool.poetry.scripts]
 kamuidrome = "kamuidrome.cli.__main__:main"

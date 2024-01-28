@@ -13,6 +13,7 @@ from cattrs.gen._consts import AttributeOverride
 # type ProjectType = Literal["mod", "modpack", "resourcepack", "shader"]
 # type ModSide = Literal["unknown", "required", "optional", "unsupported"]
 
+
 class ModSideValue(enum.Enum):  # noqa: D101
     UNKNOWN = "unknown"
     REQUIRED = "required"
