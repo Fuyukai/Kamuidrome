@@ -60,12 +60,14 @@ tests-no-zope = ["attrs[tests-mypy]", "cloudpickle", "hypothesis", "pympler", "p
 
 [[package]]
 name = "cattrs"
-version = "23.2.4.dev26"
+version = "23.2.3"
 description = "Composable complex class support for attrs and dataclasses."
 optional = false
 python-versions = ">=3.8"
-files = []
-develop = false
+files = [
+    {file = "cattrs-23.2.3-py3-none-any.whl", hash = "sha256:0341994d94971052e9ee70662542699a3162ea1e0c62f7ce1b4a57f563685108"},
+    {file = "cattrs-23.2.3.tar.gz", hash = "sha256:a934090d95abaa9e911dac357e3a8699e0b4b14f8529bcc7d2b1ad9d51672b9f"},
+]
 
 [package.dependencies]
 attrs = ">=23.1.0"
@@ -74,17 +76,10 @@ attrs = ">=23.1.0"
 bson = ["pymongo (>=4.4.0)"]
 cbor2 = ["cbor2 (>=5.4.6)"]
 msgpack = ["msgpack (>=1.0.5)"]
-msgspec = ["msgspec (>=0.18.5)"]
 orjson = ["orjson (>=3.9.2)"]
 pyyaml = ["pyyaml (>=6.0)"]
 tomlkit = ["tomlkit (>=0.11.8)"]
 ujson = ["ujson (>=5.7.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/python-attrs/cattrs.git"
-reference = "HEAD"
-resolved_reference = "6a5c6f11fd662a28a941d170d4cb707d698ad5c6"
 
 [[package]]
 name = "certifi"
@@ -393,4 +388,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.12"
-content-hash = "40786abf7f774c4329d40739defcde54f55f8cc91f2248b5914e5bdcf52256a5"
+content-hash = "275548f3191c07e6d9293507a18b2221b7147f6b29788171895c9219099a812f"

@@ -1,3 +1,4 @@
+import enum
 import typing
 from collections.abc import Iterator, Sequence
 from typing import Literal, NewType, final, overload
@@ -8,8 +9,16 @@ from arrow import Arrow
 from cattr import Converter, override
 from cattrs.gen._consts import AttributeOverride
 
-type ProjectType = Literal["mod", "modpack", "resourcepack", "shader"]
-type ModSide = Literal["unknown", "required", "optional", "unsupported"]
+# Revert this commit when cattrs 24.x drops.
+# type ProjectType = Literal["mod", "modpack", "resourcepack", "shader"]
+# type ModSide = Literal["unknown", "required", "optional", "unsupported"]
+
+class ModSideValue(enum.Enum):  # noqa: D101
+    UNKNOWN = "unknown"
+    REQUIRED = "required"
+    OPTIONAL = "optional"
+    UNSUPPORTED = "unsupported"
+
 
 # deliberately undocumented because i'm lazy. see the modrinth docs.
 # see client.py for why we need some hackery with cattrs overrides.
@@ -53,9 +62,8 @@ class ProjectInfoMixin:
     description: str = attr.ib()  # short description
 
     # really terrible way of doing it, imo.
-    # see https://github.com/python-attrs/cattrs/issues/484 for why this is duplicated.
-    client_side: ModSide = attr.ib()
-    server_side: ModSide = attr.ib()
+    client_side: ModSideValue = attr.ib()
+    server_side: ModSideValue = attr.ib()
 
     raw_categories: list[str] = attr.ib()
     raw_versions: list[str] = attr.ib()
