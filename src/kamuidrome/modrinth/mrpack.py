@@ -24,6 +24,7 @@ from typing import Any
 
 import httpx
 import more_itertools
+from rich import print
 
 from kamuidrome.meta import AvailablePackLoader
 from kamuidrome.modrinth.client import ModrinthApi
@@ -100,6 +101,7 @@ def create_mrpack(
     pack: LocalPack,
     api: ModrinthApi,
     output: Path,
+    ci_mode: bool = False,
 ) -> Path:
     """
     Creates a new ``mrpack`` file from the given pack.
@@ -122,6 +124,11 @@ def create_mrpack(
                 pack.metadata.game_version,
                 pack.metadata.loader.type,
             )
+
+        print(
+            "[green]selected loader version[/green] "
+            f"[white]{pack.metadata.loader.mrpack_name} {loader_version}[/white]"
+        )
 
         files_struct: list[dict[str, Any]] = []
         index = {
@@ -154,8 +161,13 @@ def create_mrpack(
             real_dir = (pack.directory / to_copy_dir).resolve()
             shutil.copytree(real_dir, tmpdir_path / to_copy_dir)
 
-        actual_file = output.with_suffix(".zip")
-        make_archive(tmpdir_path, output)
-        actual_file.rename(output)
+        if ci_mode:
+            shutil.copytree(tmpdir_path, output, dirs_exist_ok=True)
+        else:
+            actual_file = output.with_suffix(".zip")
+            make_archive(tmpdir_path, output)
+            actual_file.rename(output)
+
+        print(f"[green]written output to [/green] [white]{output}[/white] ({ci_mode=})")
 
     return output

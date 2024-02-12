@@ -89,7 +89,13 @@ def main() -> int:
 
     export_group = subcommands.add_parser("export", help="Exports pack as an mrpack file")
     export_group.add_argument(
-        "FILENAME", help="The name of the file to write", nargs="?", default=None
+        "FILENAME", help="The name of the file or directory to write", nargs="?", default=None
+    )
+    export_group.add_argument(
+        "--ci-mode",
+        action="store_true",
+        default=False,
+        help="Outputs an unpacked mrpack instead of a fully packed one",
     )
 
     args = parser.parse_args()
@@ -157,12 +163,19 @@ def main() -> int:
 
         elif subcommand == "export":
             export_name: str | None = args.FILENAME
-            if export_name is None:
-                export_path = (Path.cwd() / pack.metadata.name).with_suffix(".mrpack")
-            else:
-                export_path = Path(export_name).with_suffix(".mrpack")
+            ci_mode: bool = args.ci_mode
 
-            create_mrpack(pack, api, export_path)
+            if export_name is None:
+                if ci_mode:
+                    parser.error("must provide a directory name in ci mode")
+                else:
+                    export_path = (Path.cwd() / pack.metadata.name).with_suffix(".mrpack")
+            elif not ci_mode:
+                export_path = Path(export_name).with_suffix(".mrpack")
+            else:
+                export_path = Path(export_name)
+
+            create_mrpack(pack, api, export_path, ci_mode=ci_mode)
             return 0
 
     return 0
