@@ -215,28 +215,31 @@ class LocalPack:
         for dir in self.metadata.include_directories:
             shutil.rmtree(instance_path / dir, ignore_errors=True)
 
-    def deploy_modpack(self, cache: ModCache, localmeta: LocalMetadata) -> int:
+    def deploy_to_directory(
+        self,
+        cache: ModCache,
+        deploy_path: Path,
+        localmeta: LocalMetadata | None,
+    ) -> int:
         """
-        Deploys a modpack to the specified Prism Launcher instance.
+        Deploys the symbolic links to the provided directory.
         """
 
         if not self._validate_downloaded_mods(cache):
             print("[red]unable to validate downloaded mods.[/red] try 'kamuidrome download' first.")
             return 1
 
-        prism_dir = get_prism_instances_directory()
-        instance_dir = find_minecraft_dir(prism_dir, localmeta.instance_name)
-        instance_dir = instance_dir.resolve()
+        deploy_path.mkdir(exist_ok=True, parents=False)
 
-        index_path = instance_dir / "kamuidrome.json"
+        index_path = deploy_path / "kamuidrome.json"
 
         # step 1: make sure there's no stale symlinks around
         if not index_path.exists():
             print("[yellow]no index found[/yellow], cleaning up instance files")
-            self._setup_instance_firsttime(instance_dir)
+            self._setup_instance_firsttime(deploy_path)
         else:
             print("[yellow]cleaning up symlinks from index...[/yellow]")
-            cleanup_from_index(instance_dir, index_path)
+            cleanup_from_index(deploy_path, index_path)
 
         symlink_index: list[str] = []
 
@@ -254,23 +257,34 @@ class LocalPack:
                 print(f"[yellow]skipping dir[/yellow] [white]{potential_dir}[/white] (not found)")
                 continue
 
-            instance_symlink = instance_dir / directory
+            included_symlink = deploy_path / directory
+            if included_symlink.exists():
+                print(
+                    f"[yellow]removing old, non-symlink dir[/yellow] "
+                    f"[white]{included_symlink}[/white]"
+                )
+                shutil.rmtree(included_symlink)
 
-            symlink(instance_symlink, potential_dir, is_dir=True)
+            symlink(included_symlink, potential_dir, is_dir=True)
 
-            print(f"[green]linked included dir[/green] [white]{instance_symlink}[/white]")
+            print(f"[green]linked included dir[/green] [white]{included_symlink}[/white]")
 
         # step 3: symlink found mod jar files
         our_mods_dir = our_base_dir / "mods"
-        instance_mods_dir = instance_dir / "mods"
+        deployed_mods_dir = deploy_path / "mods"
         for file in our_mods_dir.iterdir():
             if file.suffix != ".jar":
                 continue
 
-            mod_symlink = instance_mods_dir / file.name
-            symlink(mod_symlink, file, is_dir=False)
+            # don't overwrite if there's a ``.disabled`` in the target directory.
+            target_file = deployed_mods_dir / file.name
+            if target_file.with_suffix(".jar.disabled").exists():
+                print(f"[yellow]skipping deploying[/yellow] [white]{target_file.name}[/white]")
+                continue
 
-            print(f"[green]linked included mod[/green] [white]{mod_symlink}[/white]")
+            symlink(target_file, file, is_dir=False)
+
+            print(f"[green]linked included mod[/green] [white]{target_file}[/white]")
 
         # step 4: symlink mods from cache
         for mod in self.mods.values():
@@ -278,23 +292,47 @@ class LocalPack:
             actual_file_name = cache.get_real_filename(mod.project_id, mod.version_id)
             assert actual_file_name, "don't fuck about with me!"
 
-            instance_mod_path = instance_mods_dir / actual_file_name
-            symlink(instance_mod_path, actual_file_location.resolve(), is_dir=False)
-
-            print(f"[green]linked managed mod[/green] [white]{instance_mod_path}[/white]")
-
-        # step 5: symlink local directories
-        for extra_dir in localmeta.extra_symlinked_dirs:
-            our_extra_dir = (our_base_dir / extra_dir).resolve()
-            if not our_extra_dir.exists():
+            target_file = deployed_mods_dir / actual_file_name
+            if target_file.with_suffix(".jar.disabled").exists():
+                print(f"[yellow]skipping deploying[/yellow] [white]{target_file.name}[/white]")
                 continue
 
-            their_extra_dir = instance_dir / extra_dir
-            symlink(their_extra_dir, our_extra_dir, is_dir=True)
-            print(f"[green]linked extra dir[/green] [white]{our_extra_dir}[/white]")
+            symlink(target_file, actual_file_location.resolve(), is_dir=False)
+
+            print(f"[green]linked managed mod[/green] [white]{target_file}[/white]")
+
+        # step 5: symlink local directories
+        if localmeta is not None:
+            for extra_dir in localmeta.extra_symlinked_dirs:
+                our_extra_dir = (our_base_dir / extra_dir).resolve()
+                if not our_extra_dir.exists():
+                    continue
+
+                their_extra_dir = deploy_path / extra_dir
+                symlink(their_extra_dir, our_extra_dir, is_dir=True)
+                print(f"[green]linked extra dir[/green] [white]{our_extra_dir}[/white]")
 
         with index_path.open(mode="w") as f:
             json.dump(symlink_index, f)
+
+        return 0
+
+    def deploy_to_instance(
+        self, cache: ModCache, instance_name: str, localmeta: LocalMetadata | None
+    ) -> int:
+        """
+        Deploys a modpack to the specified Prism Launcher instance.
+        """
+
+        if not self._validate_downloaded_mods(cache):
+            print("[red]unable to validate downloaded mods.[/red] try 'kamuidrome download' first.")
+            return 1
+
+        prism_dir = get_prism_instances_directory()
+        instance_dir = find_minecraft_dir(prism_dir, instance_name)
+        instance_dir = instance_dir.resolve()
+
+        self.deploy_to_directory(cache, instance_dir, localmeta)
 
         return 0
 

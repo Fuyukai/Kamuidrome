@@ -1,4 +1,5 @@
 import argparse
+import contextlib
 import pprint
 import sys
 from pathlib import Path
@@ -70,8 +71,12 @@ def main() -> int:
     )
 
     deploy_group = subcommands.add_parser("deploy", help="Deploys a modpack")
-    deploy_group.add_argument(
-        "INSTANCE", help="The name of the Prism instance to write to", nargs="?"
+    deploy_group_args = deploy_group.add_mutually_exclusive_group(required=False)
+    deploy_group_args.add_argument(
+        "-i", "--instance", help="The name of the Prism instance to deploy to", default=None
+    )
+    deploy_group_args.add_argument(
+        "-d", "--directory", help="The path of the directory to deploy to", default=None, type=Path
     )
 
     pin_group = subcommands.add_parser(name="pin", help="Pins a mod version to the current version")
@@ -114,18 +119,29 @@ def main() -> int:
             add_mod_by_version_id(pack, api, cache, VersionId(version_id))
 
         elif subcommand == "deploy":
-            instance_name: str | None = args.INSTANCE
-            if instance_name is None:
-                local_metadata: LocalMetadata
-                try:
-                    localpack = pack.directory / "localpack.toml"
-                    data = tomlkit.loads(localpack.read_text())
-                    local_metadata = cattrs.structure(data, LocalMetadata)
-                except (FileNotFoundError, KeyError):
-                    parser.error("must pass an instance name if not using localpack.toml")
+            instance_name: str | None = args.instance
+            folder_name: Path | None = args.directory
 
-            # pyright incorrectly complains about this being possibly unbound.
-            return pack.deploy_modpack(cache, local_metadata)  # type: ignore
+            local_metadata: LocalMetadata | None = None
+
+            with contextlib.suppress(FileNotFoundError, KeyError):
+                localpack = pack.directory / "localpack.toml"
+                data = tomlkit.loads(localpack.read_text())
+                local_metadata = cattrs.structure(data, LocalMetadata)
+
+            if folder_name is not None:
+                return pack.deploy_to_directory(cache, folder_name, local_metadata)
+
+            if instance_name is None:
+                if local_metadata is None:
+                    parser.error(
+                        "expected either a folder name, an instance name, "
+                        "or for the instance name to be set in localpack.toml"
+                    )
+
+                instance_name = local_metadata.instance_name
+
+            return pack.deploy_to_instance(cache, instance_name, local_metadata)
 
         elif subcommand == "pin":
             return pack.pin(" ".join(args.MOD))
