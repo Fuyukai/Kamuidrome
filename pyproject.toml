@@ -55,8 +55,9 @@ respect-gitignore = true
 # fix = true
 src = ["src/kamuidrome"]
 line-length = 100
-show-source = true
+output-format = "full"
 
+[tool.ruff.lint]
 select = [
     "RUF",
     "F",
@@ -84,8 +85,8 @@ ignore = [
     "W293",
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/test_*" = ["D"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 combine-as-imports = true
