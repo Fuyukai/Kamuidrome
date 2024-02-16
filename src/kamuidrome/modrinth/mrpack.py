@@ -148,6 +148,7 @@ def create_mrpack(
             "formatVersion": 1,
             "game": "minecraft",
             "versionId": pack.metadata.version,
+            "name": pack.metadata.name,
             "dependencies": {
                 "minecraft": pack.metadata.game_version,
                 pack.metadata.loader.mrpack_name: loader_version,
