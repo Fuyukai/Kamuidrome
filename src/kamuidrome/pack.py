@@ -13,7 +13,7 @@ from tomlkit import load as toml_load
 from kamuidrome.cache import ModCache
 from kamuidrome.meta import LocalMetadata, PackMetadata
 from kamuidrome.modrinth.client import ModrinthApi
-from kamuidrome.modrinth.models import ProjectId, VersionId
+from kamuidrome.modrinth.models import ModSideValue, ProjectId, VersionId
 from kamuidrome.modrinth.utils import VersionResult
 from kamuidrome.prism import (
     cleanup_from_index,
@@ -58,6 +58,9 @@ class InstalledMod:
 
     #: If this mod is pinned (i.e. won't be automatically updated).
     pinned: bool = attr.ib(default=False)
+
+    #: If true, this is a client-side only mod.
+    client_side_only: bool = attr.ib(default=False)
 
 
 class LocalPack:
@@ -164,6 +167,7 @@ class LocalPack:
                     if not selected:
                         selected = old_metadata.selected
 
+                print(project.server_side)
                 self.mods[project.id] = InstalledMod(
                     name=project.title,
                     project_id=version.project_id,
@@ -172,6 +176,7 @@ class LocalPack:
                     checksum=cast(str, cache.get_file_checksum(version.project_id, version.id)),
                     selected=selected,
                     pinned=False,
+                    client_side_only=project.server_side == ModSideValue.UNSUPPORTED,
                 )
 
                 progress.update(all_mods, advance=1)

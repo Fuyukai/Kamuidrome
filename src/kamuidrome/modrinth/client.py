@@ -16,6 +16,7 @@ from kamuidrome.modrinth.models import (
     ProjectVersion,
     VersionId,
 )
+from kamuidrome.retry import RetryTransport
 
 CONVERTER = cattr.GenConverter()
 CONVERTER.forbid_extra_keys = False
@@ -62,11 +63,12 @@ class ModrinthApi:
 
     def __init__(self, client: httpx.Client) -> None:
         self.client = client
+        self.client._transport = RetryTransport(self.client._transport)
         client.base_url = f"https://api.modrinth.com/{self.API_VERSION}"
         client.headers = {
             "user-agent": f"Mozilla/5.0 (kamuidrome/{VERSION}; https://github.com/Fuyukai/kamuidrome) AppleWebKit/537.3 (KHTML, like Packwiz)"  # noqa: E501
         }
-        client.timeout = 30
+        client.timeout = 10
         client.follow_redirects = True
 
     def get_project_info(self, project_id: str) -> ProjectInfoFromProject:

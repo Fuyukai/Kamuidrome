@@ -102,6 +102,7 @@ def create_mrpack(
     api: ModrinthApi,
     output: Path,
     ci_mode: bool = False,
+    server_only: bool = False,
 ) -> Path:
     """
     Creates a new ``mrpack`` file from the given pack.
@@ -116,7 +117,13 @@ def create_mrpack(
         dot_minecraft = tmpdir_path / "overrides"
         dot_minecraft.mkdir(exist_ok=False, parents=False)
 
-        versions = api.get_multiple_versions([m.version_id for m in pack.mods.values()])
+        if server_only:
+            version_ids = [m.version_id for m in pack.mods.values() if not m.client_side_only]
+        else:
+            version_ids = [m.version_id for m in pack.mods.values()]
+
+        versions = api.get_multiple_versions(version_ids)
+
         files = [version.primary_file for version in versions]
 
         loader_version = pack.metadata.loader.version

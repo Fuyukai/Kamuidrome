@@ -97,6 +97,9 @@ def main() -> int:
         default=False,
         help="Outputs an unpacked mrpack instead of a fully packed one",
     )
+    export_group.add_argument(
+        "--server-only", action="store_true", default=False, help="Only outputs server-side mods"
+    )
 
     args = parser.parse_args()
     cache_dir: Path = args.cache_dir
@@ -164,6 +167,7 @@ def main() -> int:
         elif subcommand == "export":
             export_name: str | None = args.FILENAME
             ci_mode: bool = args.ci_mode
+            server_only: bool = args.server_only
 
             if export_name is None:
                 if ci_mode:
@@ -174,8 +178,9 @@ def main() -> int:
                 export_path = Path(export_name).with_suffix(".mrpack")
             else:
                 export_path = Path(export_name)
+                export_path.mkdir(exist_ok=True, parents=True)
 
-            create_mrpack(pack, api, export_path, ci_mode=ci_mode)
+            create_mrpack(pack, api, export_path, ci_mode=ci_mode, server_only=server_only)
             return 0
 
     return 0
