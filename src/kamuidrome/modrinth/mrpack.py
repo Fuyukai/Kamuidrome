@@ -123,7 +123,7 @@ def create_mrpack(
             if server_only and mod.client_side_only:
                 print(f"[yellow]not exporting {mod.name}[/yellow]")
                 continue
-            
+
             print(f"[yellow] definitely exporting {mod.name} ({mod.version_id})")
             version_ids.append(mod.version_id)
 
