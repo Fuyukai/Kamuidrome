@@ -113,6 +113,8 @@ def create_mrpack(
 
     with tempfile.TemporaryDirectory() as dir:
         tmpdir_path = Path(dir)
+        dot_minecraft = tmpdir_path / "overrides"
+        dot_minecraft.mkdir(exist_ok=False, parents=False)
 
         versions = api.get_multiple_versions([m.version_id for m in pack.mods.values()])
         files = [version.primary_file for version in versions]
@@ -159,7 +161,7 @@ def create_mrpack(
 
         for to_copy_dir in directories:
             real_dir = (pack.directory / to_copy_dir).resolve()
-            shutil.copytree(real_dir, tmpdir_path / to_copy_dir)
+            shutil.copytree(real_dir, dot_minecraft / to_copy_dir)
 
         if ci_mode:
             shutil.copytree(tmpdir_path, output, dirs_exist_ok=True)
