@@ -28,6 +28,7 @@ from rich import print
 
 from kamuidrome.meta import AvailablePackLoader
 from kamuidrome.modrinth.client import ModrinthApi
+from kamuidrome.modrinth.models import VersionId
 from kamuidrome.pack import LocalPack
 
 
@@ -102,6 +103,7 @@ def create_mrpack(
     api: ModrinthApi,
     output: Path,
     ci_mode: bool = False,
+    server_only: bool = False,
 ) -> Path:
     """
     Creates a new ``mrpack`` file from the given pack.
@@ -116,7 +118,16 @@ def create_mrpack(
         dot_minecraft = tmpdir_path / "overrides"
         dot_minecraft.mkdir(exist_ok=False, parents=False)
 
-        versions = api.get_multiple_versions([m.version_id for m in pack.mods.values()])
+        version_ids: list[VersionId] = []
+        for mod in pack.mods.values():
+            if server_only and mod.client_side_only:
+                print(f"[yellow]not exporting {mod.name}[/yellow]")
+                continue
+            
+            print(f"[yellow] definitely exporting {mod.name} ({mod.version_id})")
+            version_ids.append(mod.version_id)
+
+        versions = api.get_multiple_versions(version_ids)
         files = [version.primary_file for version in versions]
 
         loader_version = pack.metadata.loader.version
@@ -146,6 +157,7 @@ def create_mrpack(
 
         # versions in this case means the indexed mods.
         for version_file in files:
+            print("adding version file", version_file.filename)
             body = {
                 "path": f"mods/{version_file.filename}",
                 "hashes": version_file.hashes,
@@ -155,7 +167,7 @@ def create_mrpack(
             files_struct.append(body)
 
         with (tmpdir_path / "modrinth.index.json").open(mode="w") as f:
-            json.dump(index, f)
+            json.dump(index, f, sort_keys=True)
 
         directories = ["config", "mods", *pack.metadata.include_directories]
 
