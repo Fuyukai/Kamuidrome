@@ -167,7 +167,6 @@ class LocalPack:
                     if not selected:
                         selected = old_metadata.selected
 
-                print(project.server_side)
                 self.mods[project.id] = InstalledMod(
                     name=project.title,
                     project_id=version.project_id,
