@@ -20,9 +20,12 @@ def download_all_mods(
     Downloads all mods in the index for a specified pack.
     """
 
-    projects = modrinth.get_multiple_projects(list(pack.mods.keys()))
+    projects = {p.id: p for p in modrinth.get_multiple_projects(list(pack.mods.keys()))}
     versions = modrinth.get_multiple_versions([v.version_id for v in pack.mods.values()])
-    all_versions = list(zip(projects, versions, strict=True))
+    all_versions: VersionResult = []
+
+    for ver in versions:
+        all_versions.append((projects[ver.project_id], ver))
 
     pack.download_and_add_mods(modrinth, cache, all_versions, selected_mod=None)
 
