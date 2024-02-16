@@ -156,6 +156,7 @@ def create_mrpack(
 
         # versions in this case means the indexed mods.
         for version_file in files:
+            print("adding version file", version_file.filename)
             body = {
                 "path": f"mods/{version_file.filename}",
                 "hashes": version_file.hashes,
