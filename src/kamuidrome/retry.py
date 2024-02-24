@@ -50,15 +50,15 @@ class RetryTransport(httpx.BaseTransport):  # noqa: D101
 
     @override
     def handle_request(self, request: httpx.Request) -> httpx.Response:
-        response = self.wrapped_transport.handle_request(request)
-
-        if request.method not in self.retryable_methods:
-            return response
-
         remaining_attempts = self.max_attempts - 1
         attempts_made = 1
 
         while True:
+            try:
+                response = self.wrapped_transport.handle_request(request)
+            except httpx.TimeoutException:
+                continue
+
             if remaining_attempts < 1 or response.status_code not in self.retry_status_codes:
                 return response
 
