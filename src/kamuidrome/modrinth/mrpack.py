@@ -18,7 +18,9 @@
 
 import json
 import shutil
+import subprocess
 import tempfile
+from io import StringIO
 from pathlib import Path
 from typing import Any
 
@@ -169,6 +171,41 @@ def create_mrpack(
 
         with (tmpdir_path / "modrinth.index.json").open(mode="w") as f:
             json.dump(index, f, sort_keys=True)
+
+        with (tmpdir_path / "overrides" / "kamuidrome.metadata").open(mode="w") as f:
+            f.reconfigure(line_buffering=True)
+
+            # Line 1: Pack name
+            f.write(pack.metadata.name)
+            f.write("\n")
+            # Line 2: Pack version
+            f.write(pack.metadata.version)
+            f.write("\n")
+
+            # Line 3: (Commit hash, Branch name, Commit message)
+            try:
+                git_buf = StringIO()
+                current_commit = subprocess.check_output(
+                    "git rev-parse HEAD".split(), encoding="utf-8"
+                ).strip()
+                current_branch = subprocess.check_output(
+                    "git rev-parse --abbrev-ref HEAD".split(), encoding="utf-8"
+                ).strip()
+                commit_message = subprocess.check_output(
+                    "git show-branch --no-name HEAD".split(), encoding="utf-8"
+                ).strip()
+
+                git_buf.write(current_commit)
+                git_buf.write(" ")
+                git_buf.write(current_branch)
+                git_buf.write(" ")
+                git_buf.write(commit_message)
+                git_line = git_buf.getvalue()
+            except subprocess.SubprocessError:
+                git_line = ""
+
+            f.write(git_line)
+            f.write("\n")
 
         directories = ["config", "mods", *pack.metadata.include_directories]
 
