@@ -1,4 +1,7 @@
+import contextlib
 import enum
+import subprocess
+from subprocess import SubprocessError
 
 import attr
 
@@ -83,7 +86,10 @@ class PackMetadata:
     name: str = attr.ib()
 
     #: Human-friendly version of the pack, used during export.
-    version: str = attr.ib()
+    version: str = attr.ib(default="0.0.0")
+
+    #: If True, dynamic versioning (Git versioning) is enabled.
+    dynamic_version: bool = attr.ib(default=False)
 
     #: The minecraft version for this pack.
     game_version: str = attr.ib()
@@ -92,6 +98,26 @@ class PackMetadata:
     include_directories: list[str] = attr.ib()
 
     loader: PackLoaderInfo = attr.ib()
+
+    def __attrs_post_init__(self):
+        if not self.dynamic_version:
+            return
+
+        with contextlib.suppress(SubprocessError):
+            last_tag = subprocess.check_output(
+                "git describe --tags --abbrev=0".split(), encoding="utf-8"
+            ).strip()
+            commit_count = int(
+                subprocess.check_output(
+                    f"git rev-list {last_tag}..HEAD --count".split(), encoding="utf-8"
+                ).strip()
+            )
+
+            if last_tag.startswith("v"):
+                last_tag = last_tag[1:]
+
+            version = f"{last_tag}+post.{commit_count}" if commit_count > 0 else last_tag
+            object.__setattr__(self, "version", version)
 
     @property
     def available_loaders(self) -> tuple[str] | tuple[str, str]:
