@@ -104,20 +104,14 @@ class PackMetadata:
             return
 
         with contextlib.suppress(SubprocessError):
-            last_tag = subprocess.check_output(
-                "git describe --tags --abbrev=0".split(), encoding="utf-8"
+            described = subprocess.check_output(
+                "git describe".split(), encoding="utf-8"
             ).strip()
-            commit_count = int(
-                subprocess.check_output(
-                    f"git rev-list {last_tag}..HEAD --count".split(), encoding="utf-8"
-                ).strip()
-            )
 
-            if last_tag.startswith("v"):
-                last_tag = last_tag[1:]
+            if described.startswith("v"):
+                described = described[1:]
 
-            version = f"{last_tag}+post.{commit_count}" if commit_count > 0 else last_tag
-            object.__setattr__(self, "version", version)
+            object.__setattr__(self, "version", described)
 
     @property
     def available_loaders(self) -> tuple[str] | tuple[str, str]:
