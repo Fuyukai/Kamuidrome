@@ -63,7 +63,7 @@ class ModrinthApi:
 
     def __init__(self, client: httpx.Client) -> None:
         self.client = client
-        self.client._transport = RetryTransport(self.client._transport)
+        self.client._transport = RetryTransport(self.client._transport)  # type: ignore
         client.base_url = f"https://api.modrinth.com/{self.API_VERSION}"
         client.headers = {
             "user-agent": f"Mozilla/5.0 (kamuidrome/{VERSION}; https://github.com/Fuyukai/kamuidrome) AppleWebKit/537.3 (KHTML, like Packwiz)"  # noqa: E501

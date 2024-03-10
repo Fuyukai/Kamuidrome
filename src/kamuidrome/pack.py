@@ -1,6 +1,7 @@
 import enum
 import json
 import shutil
+from collections import deque
 from pathlib import Path
 from typing import cast
 
@@ -366,22 +367,52 @@ class LocalPack:
         return 0
 
 
-def load_local_pack(directory: Path) -> LocalPack:
+def find_pack_dir() -> Path | None:
+    """
+    Finds the pack directory by looking through parent directories.
+    """
+
+    # st_dev is the ID of the device that the filesystem for this file resides on.
+    # see stat(3type)
+    
+    top_fs = Path.cwd().stat().st_dev
+    dirs = deque([Path.cwd()])
+
+    while dirs:
+        next_dir = dirs.popleft()
+        if next_dir.stat().st_dev != top_fs:
+            print(
+                f"[red]refusing to resolve through different filesystem at[/red] "
+                f"[white]{next_dir}[/white]"
+            )
+            return None
+
+        if (next_dir / "pack.toml").exists():
+            return next_dir
+        
+        if next_dir.parent == next_dir:  # root directory
+            return None
+
+        dirs.append(next_dir.parent)
+
+    raise RuntimeError("unreachable")
+
+
+def load_local_pack(pack_dir: Path) -> LocalPack:
     """
     Loads a :class:`.LocalPack` from the specified directory.
     """
 
-    pack_meta_path = directory / "pack.toml"
-    with pack_meta_path.open() as f:
+    with (pack_dir / "pack.toml").open() as f:
         raw_data = toml_load(f)
         pack_meta = cattrs.structure(raw_data, PackMetadata)
 
     try:
-        mods_index_path = directory / "mods" / "mod-index.json"
+        mods_index_path = pack_dir / "mods" / "mod-index.json"
         with mods_index_path.open() as f:
             raw_selected = json.load(f)
             selected_mods = cattrs.structure(raw_selected, dict[ProjectId, InstalledMod])
     except FileNotFoundError:
         selected_mods: dict[ProjectId, InstalledMod] = {}
 
-    return LocalPack(directory, pack_meta, selected_mods)
+    return LocalPack(pack_dir, pack_meta, selected_mods)

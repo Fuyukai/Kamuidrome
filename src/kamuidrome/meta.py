@@ -104,9 +104,7 @@ class PackMetadata:
             return
 
         with contextlib.suppress(SubprocessError):
-            described = subprocess.check_output(
-                "git describe".split(), encoding="utf-8"
-            ).strip()
+            described = subprocess.check_output("git describe".split(), encoding="utf-8").strip()
 
             if described.startswith("v"):
                 described = described[1:]

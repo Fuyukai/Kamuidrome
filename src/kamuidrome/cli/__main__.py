@@ -8,6 +8,7 @@ import cattrs
 import httpx
 import platformdirs
 import tomlkit
+from rich import print
 
 from kamuidrome.cache import ModCache
 from kamuidrome.cli.add import add_mod_by_project_id, add_mod_by_searching, add_mod_by_version_id
@@ -18,7 +19,7 @@ from kamuidrome.meta import LocalMetadata
 from kamuidrome.modrinth.client import ModrinthApi
 from kamuidrome.modrinth.models import ProjectId, VersionId
 from kamuidrome.modrinth.mrpack import create_mrpack
-from kamuidrome.pack import load_local_pack
+from kamuidrome.pack import find_pack_dir, load_local_pack
 
 
 def main() -> int:
@@ -30,7 +31,7 @@ def main() -> int:
     parser.add_argument(
         "--pack-dir",
         help="The directory to use (defaults to CWD)",
-        default=Path.cwd(),
+        default=None,
         type=Path,
     )
     parser.add_argument(
@@ -107,10 +108,21 @@ def main() -> int:
 
     subcommand: str = args.subcommand
 
+    pack_dir: Path | None = args.pack_dir
     if subcommand == "init":
-        return interactively_create_pack(args.pack_dir, with_git=args.git)
+        if pack_dir is None:
+            pack_dir = Path.cwd()
 
-    pack = load_local_pack(args.pack_dir)
+        return interactively_create_pack(pack_dir, with_git=args.git)
+
+    if pack_dir is None:
+        pack_dir = find_pack_dir()
+
+        if pack_dir is None:
+            print("[red]couldn't find a valid pack.toml[/red]")
+            return 1
+
+    pack = load_local_pack(pack_dir)
 
     with httpx.Client() as client:
         api = ModrinthApi(client)
