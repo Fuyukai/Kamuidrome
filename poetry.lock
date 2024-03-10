@@ -385,7 +385,32 @@ files = [
     {file = "types_python_dateutil-2.8.19.20240106-py3-none-any.whl", hash = "sha256:efbbdc54590d0f16152fa103c9879c7d4a00e82078f6e2cf01769042165acaa2"},
 ]
 
+[[package]]
+name = "tzdata"
+version = "2024.1"
+description = "Provider of IANA time zone data"
+optional = false
+python-versions = ">=2"
+files = [
+    {file = "tzdata-2024.1-py2.py3-none-any.whl", hash = "sha256:9068bc196136463f5245e51efda838afa15aaeca9903f49050dfa2679db4d252"},
+    {file = "tzdata-2024.1.tar.gz", hash = "sha256:2674120f8d891909751c38abcdfd386ac0a5a1127954fbc332af6b5ceae07efd"},
+]
+
+[[package]]
+name = "whenever"
+version = "0.3.4"
+description = "Strict, predictable, and typed datetimes"
+optional = false
+python-versions = ">=3.8.1"
+files = [
+    {file = "whenever-0.3.4-py3-none-any.whl", hash = "sha256:b065cf0411b2fd138c2d6fc034108f4c92780ca8e3b955f9cee0a856e963b2c3"},
+    {file = "whenever-0.3.4.tar.gz", hash = "sha256:a21df85f3ccc4e52b16ea109d9b1a75d9a317b9d457eef4cd06d26873d40fce7"},
+]
+
+[package.dependencies]
+tzdata = {version = ">=2020.1", markers = "sys_platform == \"win32\""}
+
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.12"
-content-hash = "6391811374ffd10f00689952c166767b7393b6fea4014aa6f9008d62c21bd3ea"
+content-hash = "678cec12d0a594d190e45bf6a05441ff62d08c4a220313f8dc8d1633f517e01c"

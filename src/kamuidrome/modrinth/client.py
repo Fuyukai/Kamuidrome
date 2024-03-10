@@ -4,9 +4,9 @@ from contextlib import contextmanager
 from importlib import metadata
 from typing import Literal
 
-import arrow
 import cattr
 import httpx
+from whenever import UTCDateTime
 
 from kamuidrome.modrinth.models import (
     ProjectId,
@@ -20,7 +20,7 @@ from kamuidrome.retry import RetryTransport
 
 CONVERTER = cattr.GenConverter()
 CONVERTER.forbid_extra_keys = False
-CONVERTER.register_structure_hook(arrow.Arrow, lambda it, _: arrow.get(it))
+CONVERTER.register_structure_hook(UTCDateTime, lambda it, _: UTCDateTime.from_rfc3339(it))
 
 ProjectInfoMixin.configure_converter(CONVERTER)
 ProjectVersion.configure_converter(CONVERTER)

@@ -5,9 +5,9 @@ from typing import Literal, NewType, final, overload
 
 import attr
 import cattr
-from arrow import Arrow
 from cattr import Converter, override
 from cattrs.gen._consts import AttributeOverride
+from whenever import UTCDateTime
 
 # Revert this commit when cattrs 24.x drops.
 # type ProjectType = Literal["mod", "modpack", "resourcepack", "shader"]
@@ -229,7 +229,7 @@ class ProjectVersion:
     loaders: list[str] = attr.ib()
 
     #: When this version was uploaded.
-    date_published: Arrow = attr.ib()
+    date_published: UTCDateTime = attr.ib()
 
     #: The stability status for this version.
     version_type: Literal["release", "beta", "alpha"] = attr.ib()
