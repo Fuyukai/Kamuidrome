@@ -1,5 +1,6 @@
 # flake8: noqa: F841
 
+import os
 import subprocess
 from pathlib import Path
 from typing import cast, override
@@ -109,7 +110,7 @@ def interactively_create_pack(
 
     (path / "config").mkdir(exist_ok=True)
     (path / "mods").mkdir(exist_ok=True)
-    (path / "mods" / "mod-index.json").write_text(r"{}")
+    (path / "mods" / "mod-index.json").write_text(r"{}" + os.linesep)
 
     if with_git:
         subprocess.check_call(["git", "init", str(path.resolve())])

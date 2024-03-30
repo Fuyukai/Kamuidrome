@@ -1,5 +1,6 @@
 import enum
 import json
+import os
 import shutil
 from collections import deque
 from pathlib import Path
@@ -89,6 +90,7 @@ class LocalPack:
 
         with mod_index.open(mode="w") as f:
             json.dump(serialised, f, indent=4, sort_keys=True)
+            f.write(os.linesep)
 
     def download_and_add_mods(
         self,
