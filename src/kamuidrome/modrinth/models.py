@@ -191,7 +191,7 @@ class ProjectVersionRelation:
     dependency_type: Literal["required", "optional", "incompatible", "embedded"] = attr.ib()
 
 
-@attr.s(slots=True, frozen=True, kw_only=True)
+@attr.s(slots=True, frozen=True, kw_only=True, hash=False, eq=False)
 @final
 class ProjectVersion:
     """
@@ -240,6 +240,17 @@ class ProjectVersion:
     #: The list of :class:`.ProjectVersionFile` instances for this single version (e.g. main mod
     #: and sources jar, for weirdos who use Modrinth maven).
     files: list[ProjectVersionFile] = attr.ib()
+
+    @typing.override
+    def __hash__(self) -> int:
+        return hash(self.project_id)
+    
+    @typing.override
+    def __eq__(self, __value: object) -> bool:
+        if not isinstance(__value, ProjectVersion):
+            return NotImplemented
+    
+        return self.project_id == __value.project_id
 
     def __attrs_post_init__(self) -> None:
         if len(self.files) == 1:

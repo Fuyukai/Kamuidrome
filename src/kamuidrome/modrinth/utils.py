@@ -192,7 +192,7 @@ def resolve_dependency_versions(
 
     seen: set[ProjectId] = _seen if _seen is not None else set()
 
-    resolved: list[ProjectVersion] = []
+    resolved: set[ProjectVersion] = set()
 
     while True:
         if not dependencies:
@@ -206,10 +206,20 @@ def resolve_dependency_versions(
 
             seen.add(project)
             selected_version = resolve_latest_version(pack, modrinth, project)
-            resolved.append(selected_version)
+            resolved.add(selected_version)
             next_dependencies += get_set_of_dependencies(pack, selected_version)
 
         dependencies = next_dependencies
 
     project_infos = modrinth.get_multiple_projects([i.project_id for i in resolved])
-    return list(zip(project_infos, resolved, strict=True))
+    zipped: VersionResult = []
+
+    # unlikely to be too slow unless a projeect has like 100 deps.
+    for proj in project_infos:
+        for version in resolved:
+            if version.project_id == proj.id:
+                zipped.append((proj, version))
+                break
+        
+    assert len(zipped) == len(resolved)
+    return zipped
