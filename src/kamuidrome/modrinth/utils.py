@@ -220,6 +220,6 @@ def resolve_dependency_versions(
             if version.project_id == proj.id:
                 zipped.append((proj, version))
                 break
-        
+
     assert len(zipped) == len(resolved)
     return zipped

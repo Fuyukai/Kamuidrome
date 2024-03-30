@@ -374,7 +374,7 @@ def find_pack_dir() -> Path | None:
 
     # st_dev is the ID of the device that the filesystem for this file resides on.
     # see stat(3type)
-    
+
     top_fs = Path.cwd().stat().st_dev
     dirs = deque([Path.cwd()])
 
@@ -389,7 +389,7 @@ def find_pack_dir() -> Path | None:
 
         if (next_dir / "pack.toml").exists():
             return next_dir
-        
+
         if next_dir.parent == next_dir:  # root directory
             return None
 

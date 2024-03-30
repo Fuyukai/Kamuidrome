@@ -136,12 +136,10 @@ class ProjectSearchResult(Sequence[ProjectInfoFromSearch]):
         return len(self.hits)
 
     @overload
-    def __getitem__(self, index: int) -> ProjectInfoFromSearch:
-        ...
+    def __getitem__(self, index: int) -> ProjectInfoFromSearch: ...
 
     @overload
-    def __getitem__(self, index: slice) -> Sequence[ProjectInfoFromSearch]:
-        ...
+    def __getitem__(self, index: slice) -> Sequence[ProjectInfoFromSearch]: ...
 
     @typing.override
     def __getitem__(
@@ -244,12 +242,12 @@ class ProjectVersion:
     @typing.override
     def __hash__(self) -> int:
         return hash(self.project_id)
-    
+
     @typing.override
     def __eq__(self, __value: object) -> bool:
         if not isinstance(__value, ProjectVersion):
             return NotImplemented
-    
+
         return self.project_id == __value.project_id
 
     def __attrs_post_init__(self) -> None:

@@ -71,7 +71,9 @@ def update_all_mods(
 
     if __debug__:
         for mod, version in to_download:
-            assert mod.id == version.project_id, f"{mod.title} has non-matching version {version.id}"
+            assert (
+                mod.id == version.project_id
+            ), f"{mod.title} has non-matching version {version.id}"
 
     pack.download_and_add_mods(modrinth, cache, to_download, selected_mod=None)
 
