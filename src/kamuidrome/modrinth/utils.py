@@ -2,7 +2,8 @@ from collections.abc import Sequence
 
 from rich import print
 
-from kamuidrome.meta import PackMetadata
+from kamuidrome.exc import NoAvailableVersionsError
+from kamuidrome.meta import AvailablePackLoader, PackMetadata
 from kamuidrome.modrinth.client import ModrinthApi
 from kamuidrome.modrinth.models import (
     ProjectId,
@@ -29,10 +30,11 @@ DEPENDENCY_SWAPS: dict[ProjectId, ProjectId] = {
 }
 
 
-def resolve_latest_version(
+def _do_resolve_latest_version(
     pack: PackMetadata,
     modrinth: ModrinthApi,
     info: ProjectInfoMixin | ProjectId,
+    available_loaders: Sequence[str],
     allow_unstable: bool = False,
 ) -> ProjectVersion:
     """
@@ -48,7 +50,7 @@ def resolve_latest_version(
     project_id = info.id
 
     versions = modrinth.get_project_versions(
-        project_id=project_id, loaders=pack.available_loaders, game_versions=pack.game_version
+        project_id=project_id, loaders=available_loaders, game_versions=pack.game_version
     )
 
     # a bit of trickiness with multiple loader scenarios.
@@ -72,10 +74,10 @@ def resolve_latest_version(
         print("[bold yellow]forcing geckolib onto fabric...[/bold yellow]")
         primary_loader = "fabric"
     else:
-        primary_loader = pack.available_loaders[0]
+        primary_loader = available_loaders[0]
 
-        if len(pack.available_loaders) == 2:
-            secondary_loader = pack.available_loaders[1]
+        if len(available_loaders) == 2:
+            secondary_loader = available_loaders[1]
 
     # we do a single-pass strategy here using two local variables.
     for version in versions:
@@ -141,9 +143,39 @@ def resolve_latest_version(
         )
         return secondary_version
 
-    raise ValueError(
+    raise NoAvailableVersionsError(
         f"Couldn't find an appropriate version for {info.title}; "
-        f"no valid versions found for {pack.available_loaders} on {pack.game_version}"
+        f"no valid versions found for {available_loaders} on {pack.game_version}"
+    )
+
+
+def resolve_latest_version(
+    pack: PackMetadata,
+    modrinth: ModrinthApi,
+    info: ProjectInfoMixin | ProjectId,
+    allow_unstable: bool = False,
+) -> ProjectVersion:
+    """
+    Resolves the latest matching version for the specified mod.
+
+    If ``allow_unstable`` is False, then the most recent *stable* version is chosen; otherwise,
+    unstable (alpha and beta) versions will be picked.
+
+    This is a wrapper function that will force a retry
+    """
+
+    try:
+        return _do_resolve_latest_version(
+            pack, modrinth, info, pack.available_loaders, allow_unstable=allow_unstable
+        )
+    except NoAvailableVersionsError:
+        if pack.game_version != "1.20.1" or pack.loader.type != AvailablePackLoader.NEOFORGE:
+            raise
+
+    # force a search for legacyforge instead
+    loaders = ("forge", *pack.available_loaders[1:])
+    return _do_resolve_latest_version(
+        pack, modrinth, info, loaders, allow_unstable=allow_unstable
     )
 
 
