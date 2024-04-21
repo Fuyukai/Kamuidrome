@@ -173,9 +173,12 @@ def resolve_latest_version(
             raise
 
     # force a search for legacyforge instead
-    loaders = ("forge", *pack.available_loaders[1:])
     return _do_resolve_latest_version(
-        pack, modrinth, info, loaders, allow_unstable=allow_unstable
+        pack,
+        modrinth,
+        info,
+        available_loaders=pack.get_available_loaders(pretend_to_be_forge=True),
+        allow_unstable=allow_unstable,
     )
 
 

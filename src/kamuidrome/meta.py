@@ -36,8 +36,7 @@ class PackLoaderInfo:
     #: Hack to work around geckolib issues.
     prefer_fabric_geckolib: bool = attr.ib(default=True)
 
-    @property
-    def modrinth_facets(self) -> list[str]:
+    def get_modrinth_facets(self, *, pretend_to_be_forge: bool = False) -> list[str]:
         """
         Gets a list of Modrinth facets for the loader information within.
         """
@@ -49,12 +48,21 @@ class PackLoaderInfo:
         if self.sinytra_compat:
             facets.append("categories:fabric")
 
-        if self.type == AvailablePackLoader.LEGACY_FORGE:
+        if self.type == AvailablePackLoader.LEGACY_FORGE or pretend_to_be_forge:
             facets.append("categories:forge")
-        else:
+
+        if self.type == AvailablePackLoader.NEOFORGE:
             facets.append("categories:neoforge")
 
         return facets
+
+    @property
+    def modrinth_facets(self) -> list[str]:
+        """
+        Gets a list of Modrinth facets for the loader information within.
+        """
+
+        return self.get_modrinth_facets(pretend_to_be_forge=False)
 
     @property
     def mrpack_name(self) -> str:
@@ -110,6 +118,38 @@ class PackMetadata:
                 described = described[1:]
 
             object.__setattr__(self, "version", described)
+
+    def get_available_loaders(self, *, pretend_to_be_forge: bool = False):
+        """
+        Returns the available modloaders, in priority order.
+        """
+
+        match self.loader.type:
+            case AvailablePackLoader.FABRIC:
+                return ("fabric",)
+
+            case AvailablePackLoader.QUILT:
+                return ("quilt", "fabric")
+
+            case AvailablePackLoader.LEGACY_FORGE if self.loader.sinytra_compat:
+                return ("forge", "fabric")
+
+            case AvailablePackLoader.LEGACY_FORGE:
+                return ("forge",)
+
+            case AvailablePackLoader.NEOFORGE if pretend_to_be_forge:
+                return ("forge",)
+
+            case AvailablePackLoader.NEOFORGE if (
+                pretend_to_be_forge and self.loader.sinytra_compat
+            ):
+                return ("forge", "fabric")
+
+            case AvailablePackLoader.NEOFORGE if self.loader.sinytra_compat:
+                return ("neoforge", "fabric")
+
+            case AvailablePackLoader.NEOFORGE:
+                return ("neoforge",)
 
     @property
     def available_loaders(self) -> tuple[str] | tuple[str, str]:

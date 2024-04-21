@@ -60,6 +60,12 @@ def main() -> int:
         action="store_true",
         default=False,
     )
+    add_mod.add_argument(
+        "--pretend-to-be-forge",
+        action="store_true",
+        help="Does a search pretending to be Legacyforge instead of Neoforge (1.20.1) only",
+        default=False,
+    )
     add_group = add_mod.add_mutually_exclusive_group(required=True)
     add_group.add_argument(
         "-s", "--search", help="Adds a mod by searching for the specified argument", default=None
@@ -128,9 +134,19 @@ def main() -> int:
         api = ModrinthApi(client)
 
         if subcommand == "add":
+            if args.pretend_to_be_forge and pack.metadata.game_version != "1.20.1":
+                parser.error("can't pretend to be forge on version != 1.20.1")
+
             search_query: str | None = args.search
             if search_query is not None:
-                return add_mod_by_searching(pack, api, cache, search_query, args.always_select)
+                return add_mod_by_searching(
+                    pack=pack,
+                    client=api,
+                    cache=cache,
+                    query=search_query,
+                    always_prompt_selection=args.always_select,
+                    pretend_to_be_forge=args.pretend_to_be_forge,
+                )
 
             project_id: str | None = args.project_id
             if project_id is not None:

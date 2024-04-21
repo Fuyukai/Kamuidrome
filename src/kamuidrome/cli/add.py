@@ -53,6 +53,7 @@ def add_mod_by_searching(
     cache: ModCache,
     query: str,
     always_prompt_selection: bool,
+    pretend_to_be_forge: bool,
 ) -> int:
     """
     Adds a new mod by searching Modrinth.
@@ -64,7 +65,7 @@ def add_mod_by_searching(
     result = client.get_projects_via_search(
         query,
         f"game_versions:{pack.metadata.game_version}",
-        pack.metadata.loader.modrinth_facets,
+        pack.metadata.loader.get_modrinth_facets(pretend_to_be_forge=pretend_to_be_forge),
         "project_type:mod",
         limit=10,
     )
