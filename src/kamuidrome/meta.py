@@ -137,9 +137,6 @@ class PackMetadata:
             case AvailablePackLoader.LEGACY_FORGE:
                 return ("forge",)
 
-            case AvailablePackLoader.NEOFORGE if pretend_to_be_forge:
-                return ("forge",)
-
             case AvailablePackLoader.NEOFORGE if (
                 pretend_to_be_forge and self.loader.sinytra_compat
             ):

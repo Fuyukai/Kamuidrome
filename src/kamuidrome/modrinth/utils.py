@@ -93,7 +93,7 @@ def _do_resolve_latest_version(
             if version.version_type == "release" or allow_unstable:
                 selected_version = version
                 print(
-                    f"[green]selected version[/green] "
+                    f"[green]saving primary version[/green] "
                     f"[bold white]{version.version_number}[/bold white] "
                     f"for [bold white]{title}[/bold white]"
                 )
@@ -102,8 +102,9 @@ def _do_resolve_latest_version(
                 selected_version is None
             ):
                 selected_version = version
+
                 print(
-                    f"[italic yellow]saving fallback version[/italic yellow] "
+                    f"[italic yellow]saving fallback primary (non-release) version[/italic yellow] "
                     f"[bold white]{version.version_number}[/bold white] ({version.loaders}) "
                     f"for [bold white]{title}[/bold white]"
                 )
@@ -119,7 +120,7 @@ def _do_resolve_latest_version(
             )
         ):
             print(
-                f"[italic yellow]saving fallback version[/italic yellow] "
+                f"[italic yellow]saving fallback secondary (off-loader) version[/italic yellow] "
                 f"[bold white]{version.version_number}[/bold white] ({version.loaders}) "
                 f"for [bold white]{title}[/bold white]"
             )
@@ -132,13 +133,21 @@ def _do_resolve_latest_version(
             )
 
     if selected_version is not None:
+        title = info.title if isinstance(info, ProjectInfoFromProject) else selected_version.name
+        num = selected_version.version_number
+        print(
+            "[green]selected version[/green] "
+            f"[bold white]{num} ({selected_version.loaders})[/bold white] "
+            f"for [bold white]{title}[/bold white]"
+        )
         return selected_version
 
     if secondary_version is not None:
         title = info.title if isinstance(info, ProjectInfoFromProject) else secondary_version.name
+        num = secondary_version.version_number
         print(
             "[green]selected secondary version[/green] "
-            f"[bold white]{secondary_version.version_number}[/bold white] "
+            f"[bold white]{num} ({secondary_version.loaders})[/bold white] "
             f"for [bold white]{title}[/bold white]"
         )
         return secondary_version
