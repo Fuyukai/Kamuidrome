@@ -50,7 +50,7 @@ def _parse_forge_version(
             if i["uid"] == "net.minecraft" and i["equals"] == game_version:
                 return version
 
-    raise ValueError("Couldn't find a valid legacyforge version!")
+    raise ValueError("Couldn't find a valid (neo|legacy)forge version!")
 
 
 def select_latest_loader_version(
@@ -78,12 +78,12 @@ def select_latest_loader_version(
         case AvailablePackLoader.LEGACY_FORGE:
             result = client.get("https://meta.prismlauncher.org/v1/net.minecraftforge")
             result.raise_for_status()
-            return _parse_forge_version(result.json(), game_version)
+            return _parse_forge_version(result.json()["versions"], game_version)
 
         case AvailablePackLoader.NEOFORGE:
             result = client.get("https://meta.prismlauncher.org/v1/net.neoforged")
             result.raise_for_status()
-            return _parse_forge_version(result.json(), game_version)
+            return _parse_forge_version(result.json()["versions"], game_version)
 
 
 # https://stackoverflow.com/a/69375880/15026456
