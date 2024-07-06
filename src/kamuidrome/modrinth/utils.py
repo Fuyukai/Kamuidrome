@@ -179,14 +179,14 @@ def resolve_latest_version(
         ver = _do_resolve_latest_version(
             pack, modrinth, info, pack.available_loaders, allow_unstable=allow_unstable
         )
-        
+
         if "fabric" not in ver.loaders or not retry_for_forge:
             # yeah, retry for legacyforge.
             # sorry modrinth.
             return ver
 
         print("[yellow]warning: retrying selection for native forge version[/yellow]")
-        
+
     except NoAvailableVersionsError:
         if pack.game_version != "1.20.1" or pack.loader.type != AvailablePackLoader.NEOFORGE:
             raise

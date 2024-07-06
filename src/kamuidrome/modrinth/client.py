@@ -6,7 +6,7 @@ from typing import Literal
 
 import cattr
 import httpx
-from whenever import UTCDateTime
+from whenever import Instant
 
 from kamuidrome.modrinth.models import (
     ProjectId,
@@ -20,7 +20,7 @@ from kamuidrome.retry import RetryTransport
 
 CONVERTER = cattr.GenConverter()
 CONVERTER.forbid_extra_keys = False
-CONVERTER.register_structure_hook(UTCDateTime, lambda it, _: UTCDateTime.from_rfc3339(it))
+CONVERTER.register_structure_hook(Instant, lambda it, _: Instant.parse_rfc3339(it))
 
 ProjectInfoMixin.configure_converter(CONVERTER)
 ProjectVersion.configure_converter(CONVERTER)
