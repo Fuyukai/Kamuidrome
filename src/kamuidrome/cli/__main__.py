@@ -37,7 +37,7 @@ def main() -> int:
     parser.add_argument(
         "--cache-dir",
         help="The cache directory to use (defaults to ~/.cache)",
-        default=Path(platformdirs.user_cache_dir("kamuidrone")),
+        default=Path(platformdirs.user_cache_dir("kamuidrone", ensure_exists=True)),
         type=Path,
     )
 
