@@ -36,7 +36,8 @@ def get_prism_instances_directory() -> Path:
     Gets the location of the Prism Launcher instances directory.
     """
 
-    base_dir = Path(platformdirs.user_data_dir("PrismLauncher"))
+    base_dir = Path(platformdirs.user_data_dir("PrismLauncher", appauthor=False, roaming=True))
+
     config_file = base_dir / "prismlauncher.cfg"
     return get_prism_subdir(
         base_dir, config_file.read_text(), key="InstanceDir", default_name="instances"
