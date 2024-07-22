@@ -151,7 +151,7 @@ directory in your pack without needing to synchronise.
 
 ::
 
-    $ kamuidrome deploy "test pack"
+    $ kamuidrome deploy -i "test pack"
     cleaning up symlinks from index...
     linked included dir /home/lura/.local/share/PrismLauncher/instances/test pack/.minecraft/config
     linked managed mod /home/lura/.local/share/PrismLauncher/instances/test pack/.minecraft/mods/Big Globe-3.12.0-MC1.20.1.jar
