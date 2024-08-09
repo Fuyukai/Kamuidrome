@@ -270,7 +270,11 @@ class LocalPack:
                     f"[yellow]removing old, non-symlink dir[/yellow] "
                     f"[white]{included_symlink}[/white]"
                 )
-                shutil.rmtree(included_symlink)
+
+                if included_symlink.is_symlink():  # e.g. a crash before the index got generated
+                    included_symlink.unlink()
+                else:
+                    shutil.rmtree(included_symlink)
 
             symlink(included_symlink, potential_dir, is_dir=True)
 
@@ -316,6 +320,17 @@ class LocalPack:
                     continue
 
                 their_extra_dir = deploy_path / extra_dir
+                if their_extra_dir.exists():
+                    print(
+                        "[yellow]removing existing extra dir[/yellow] "
+                        f"[white]{their_extra_dir}[/white]"
+                    )
+
+                    if their_extra_dir.is_symlink():  # e.g. crashes before index
+                        their_extra_dir.unlink()
+                    else:
+                        shutil.rmtree(their_extra_dir)
+
                 symlink(their_extra_dir, our_extra_dir, is_dir=True)
                 print(f"[green]linked extra dir[/green] [white]{our_extra_dir}[/white]")
 
