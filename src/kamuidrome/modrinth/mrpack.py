@@ -218,6 +218,9 @@ def create_mrpack(
         else:
             actual_file = output.with_suffix(".zip")
             make_archive(tmpdir_path, output)
+
+            # windows can't do a rename over an existing file!
+            actual_file.unlink(missing_ok=True)
             actual_file.rename(output)
 
         print(f"[green]written output to [/green] [white]{output}[/white] ({ci_mode=})")
