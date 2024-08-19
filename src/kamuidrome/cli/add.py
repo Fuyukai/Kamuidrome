@@ -11,7 +11,7 @@ from kamuidrome.modrinth.utils import (
     resolve_dependency_versions,
     resolve_latest_version,
 )
-from kamuidrome.pack import LocalPack
+from kamuidrome.pack import DownloadJob, LocalPack
 
 
 def _common_from_project_id(
@@ -19,6 +19,7 @@ def _common_from_project_id(
     client: ModrinthApi,
     cache: ModCache,
     project_id: ProjectId | ProjectInfoMixin,
+    ignore_dependencies: bool,
 ) -> int:
     """
     Common code for any path that uses a project ID.
@@ -38,11 +39,22 @@ def _common_from_project_id(
         return 1
 
     version = resolve_latest_version(pack.metadata, client, project_info)
-    all_versions = [
-        (project_info, version),
-        *resolve_dependency_versions(pack.metadata, client, version),
+    jobs: list[DownloadJob] = [
+        DownloadJob(
+            project_info=project_info, version=version, ignore_dependencies=ignore_dependencies
+        )
     ]
-    pack.download_and_add_mods(client, cache, all_versions, selected_mod=project_info.id)
+
+    if not ignore_dependencies:
+        for dep_info, dep_version in resolve_dependency_versions(pack.metadata, client, version):
+            jobs.append(DownloadJob(project_info=dep_info, version=dep_version))
+
+    pack.download_and_add_mods(
+        api=client,
+        cache=cache,
+        jobs=jobs,
+        selected_mod=project_info.id,
+    )
 
     return 0
 
@@ -54,6 +66,7 @@ def add_mod_by_searching(
     query: str,
     always_prompt_selection: bool,
     pretend_to_be_forge: bool,
+    ignore_dependencies: bool = False,
 ) -> int:
     """
     Adds a new mod by searching Modrinth.
@@ -103,11 +116,17 @@ def add_mod_by_searching(
     else:
         print(f"[green]successful match[/green]: {matched.title} / {matched.id}")
 
-    return _common_from_project_id(pack, client, cache, matched.id)
+    return _common_from_project_id(
+        pack, client, cache, matched.id, ignore_dependencies=ignore_dependencies
+    )
 
 
 def add_mod_by_project_id(
-    pack: LocalPack, client: ModrinthApi, cache: ModCache, project_id: ProjectId
+    pack: LocalPack,
+    client: ModrinthApi,
+    cache: ModCache,
+    project_id: ProjectId,
+    ignore_dependencies: bool,
 ) -> int:
     """
     Adds a new mod by project ID.
@@ -122,12 +141,22 @@ def add_mod_by_project_id(
 
         raise
 
-    return _common_from_project_id(pack, client, cache, result)
+    return _common_from_project_id(
+        pack=pack,
+        client=client,
+        cache=cache,
+        project_id=result,
+        ignore_dependencies=ignore_dependencies,
+    )
 
 
 def add_mod_by_version_id(
-    pack: LocalPack, client: ModrinthApi, cache: ModCache, version_id: VersionId
-):
+    pack: LocalPack,
+    client: ModrinthApi,
+    cache: ModCache,
+    version_id: VersionId,
+    ignore_dependencies: bool,
+) -> int:
     """
     Adds a new mod by an explicit version ID.
     """
@@ -157,10 +186,22 @@ def add_mod_by_version_id(
         )
         return 1
 
-    all_versions = [
-        (project_info, found_version),
-        *resolve_dependency_versions(pack.metadata, client, found_version),
+    jobs: list[DownloadJob] = [
+        DownloadJob(
+            project_info=project_info, version=found_version, ignore_dependencies=ignore_dependencies
+        )
     ]
-    pack.download_and_add_mods(client, cache, all_versions, selected_mod=project_info.id)
+
+    if not ignore_dependencies:
+        for dep_info, dep_version in resolve_dependency_versions(pack.metadata, client, found_version):
+            jobs.append(DownloadJob(project_info=dep_info, version=dep_version))
+
+
+    pack.download_and_add_mods(
+        api=client,
+        cache=cache,
+        jobs=jobs,
+        selected_mod=project_info.id,
+    )
 
     return 0

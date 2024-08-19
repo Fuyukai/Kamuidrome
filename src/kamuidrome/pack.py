@@ -1,12 +1,16 @@
+from __future__ import annotations
+
 import enum
 import json
 import os
 import shutil
 from collections import deque
+from collections.abc import Sequence
 from pathlib import Path
 from typing import cast
 
 import attr
+import attrs
 import cattrs
 from rich import print
 from rich.progress import Progress
@@ -15,8 +19,13 @@ from tomlkit import load as toml_load
 from kamuidrome.cache import ModCache
 from kamuidrome.meta import LocalMetadata, PackMetadata
 from kamuidrome.modrinth.client import ModrinthApi
-from kamuidrome.modrinth.models import ModSideValue, ProjectId, VersionId
-from kamuidrome.modrinth.utils import VersionResult
+from kamuidrome.modrinth.models import (
+    ModSideValue,
+    ProjectId,
+    ProjectInfoMixin,
+    ProjectVersion,
+    VersionId,
+)
 from kamuidrome.prism import (
     cleanup_from_index,
     find_minecraft_dir,
@@ -58,11 +67,44 @@ class InstalledMod:
     #: If this mod was added explicitly or not (i.e. as a dependency).
     selected: bool = attr.ib()
 
+    #: If this mod was installed without dependencies.
+    ignore_dependencies: bool = attr.ib(default=False)
+
     #: If this mod is pinned (i.e. won't be automatically updated).
     pinned: bool = attr.ib(default=False)
 
     #: If true, this is a client-side only mod.
     client_side_only: bool = attr.ib(default=False)
+
+
+@attrs.define(slots=True, kw_only=True)
+class DownloadJob:
+    """
+    Contains metadata for a single download job when downloading mods for a pack.
+    """
+
+    #: The basic project info for the project of this mod.
+    project_info: ProjectInfoMixin = attrs.field()
+
+    #: The actual version to download.
+    version: ProjectVersion = attrs.field()
+
+    #: If true, then the ``ignore_dependencies`` flag will be added to this mod
+    ignore_dependencies: bool = attrs.field(default=False)
+
+    @classmethod
+    def include_prev_metadata(
+        cls, project_info: ProjectInfoMixin, version: ProjectVersion, installed: InstalledMod
+    ) -> DownloadJob:
+        """
+        Creates a new :class:`.DownloadJob` that includes metadata from the previously index.
+        """
+
+        return DownloadJob(
+            project_info=project_info,
+            version=version,
+            ignore_dependencies=installed.ignore_dependencies,
+        )
 
 
 class LocalPack:
@@ -96,7 +138,7 @@ class LocalPack:
         self,
         api: ModrinthApi,
         cache: ModCache,
-        versions: VersionResult,
+        jobs: Sequence[DownloadJob],
         selected_mod: ProjectId | None,
     ) -> None:
         """
@@ -111,16 +153,19 @@ class LocalPack:
             # the all_mods is at the bottom.
 
             tasks_by_mod = {
-                version.project_id: progress.add_task(
-                    description=f"{project.title} {version.version_number}",
-                    total=version.primary_file.size,
+                job.project_info.id: progress.add_task(
+                    description=f"{job.project_info.title} {job.version.version_number}",
+                    total=job.version.primary_file.size,
                 )
-                for (project, version) in versions
+                for job in jobs
             }
 
-            all_mods = progress.add_task("[green]Downloading mods...", total=len(versions))
+            all_mods = progress.add_task("[green]Downloading mods...", total=len(jobs))
 
-            for project, version in versions:
+            for job in jobs:
+                project = job.project_info
+                version = job.version
+
                 old_metadata = self.mods.get(project.id)
                 exists_already = cache.get_real_filename(version.project_id, version.id) is not None
 
@@ -177,6 +222,7 @@ class LocalPack:
                     version_id=version.id,
                     checksum=cast(str, cache.get_file_checksum(version.project_id, version.id)),
                     selected=selected,
+                    ignore_dependencies=job.ignore_dependencies,
                     pinned=False,
                     client_side_only=project.server_side == ModSideValue.UNSUPPORTED,
                 )

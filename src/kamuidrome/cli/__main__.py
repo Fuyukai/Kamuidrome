@@ -66,6 +66,12 @@ def main() -> int:
         help="Does a search pretending to be Legacyforge instead of Neoforge (1.20.1) only",
         default=False,
     )
+    add_mod.add_argument(
+        "--ignore-dependencies",
+        action="store_true",
+        default=False,
+        help="Skips dependency resolution"
+    )
     add_group = add_mod.add_mutually_exclusive_group(required=True)
     add_group.add_argument(
         "-s", "--search", help="Adds a mod by searching for the specified argument", default=None
@@ -92,7 +98,15 @@ def main() -> int:
     subcommands.add_parser(name="list", help="List indexed mods")
 
     subcommands.add_parser(name="download", help="Downloads all mods in the index")
-    subcommands.add_parser(name="update", help="Updates all mods and dependenciess in the index")
+    update_group = subcommands.add_parser(
+        name="update", help="Updates all mods and dependenciess in the index"
+    )
+    update_group.add_argument(
+        "--with-changed-dependencies",
+        action="store_true",
+        default=False,
+        help="Download all dependencies of all mods too",
+    )
 
     export_group = subcommands.add_parser("export", help="Exports pack as an mrpack file")
     export_group.add_argument(
@@ -150,10 +164,22 @@ def main() -> int:
 
             project_id: str | None = args.project_id
             if project_id is not None:
-                return add_mod_by_project_id(pack, api, cache, ProjectId(project_id))
+                return add_mod_by_project_id(
+                    pack=pack,
+                    client=api,
+                    cache=cache,
+                    project_id=ProjectId(project_id),
+                    ignore_dependencies=args.ignore_dependencies,
+                )
 
             version_id: str = args.version_id
-            add_mod_by_version_id(pack, api, cache, VersionId(version_id))
+            add_mod_by_version_id(
+                pack=pack,
+                client=api,
+                cache=cache,
+                version_id=VersionId(version_id),
+                ignore_dependencies=args.ignore_dependencies,
+            )
 
         elif subcommand == "deploy":
             instance_name: str | None = args.instance
@@ -187,7 +213,7 @@ def main() -> int:
             return download_all_mods(pack, api, cache)
 
         elif subcommand == "update":
-            return update_all_mods(pack, api, cache)
+            return update_all_mods(pack, api, cache, with_changed_dependencies=args.with_changed_dependencies)
 
         elif subcommand == "list":
             return list_indexed_mods(pack)
