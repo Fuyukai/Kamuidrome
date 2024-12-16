@@ -188,14 +188,17 @@ def add_mod_by_version_id(
 
     jobs: list[DownloadJob] = [
         DownloadJob(
-            project_info=project_info, version=found_version, ignore_dependencies=ignore_dependencies
+            project_info=project_info,
+            version=found_version,
+            ignore_dependencies=ignore_dependencies,
         )
     ]
 
     if not ignore_dependencies:
-        for dep_info, dep_version in resolve_dependency_versions(pack.metadata, client, found_version):
+        for dep_info, dep_version in resolve_dependency_versions(
+            pack.metadata, client, found_version
+        ):
             jobs.append(DownloadJob(project_info=dep_info, version=dep_version))
-
 
     pack.download_and_add_mods(
         api=client,

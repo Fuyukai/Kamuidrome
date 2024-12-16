@@ -4,7 +4,6 @@ from kamuidrome.cache import ModCache
 from kamuidrome.modrinth.client import ModrinthApi
 from kamuidrome.modrinth.models import ProjectId
 from kamuidrome.modrinth.utils import (
-    VersionResult,
     resolve_dependency_versions,
     resolve_latest_version,
 )
@@ -50,7 +49,6 @@ def update_all_mods(
     """
 
     jobs: list[DownloadJob] = []
-    all_versions: VersionResult = []
     deps_seen: set[ProjectId] = set()
 
     with Progress() as progress:
@@ -86,7 +84,7 @@ def update_all_mods(
 
         seen.add(job.project_info.id)
         to_download.append(job)
-    
+
     if __debug__:
         for job in jobs:
             assert (

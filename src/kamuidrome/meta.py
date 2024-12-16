@@ -107,7 +107,7 @@ class PackMetadata:
 
     loader: PackLoaderInfo = attr.ib()
 
-    def __attrs_post_init__(self):
+    def __attrs_post_init__(self) -> None:
         if not self.dynamic_version:
             return
 
@@ -119,7 +119,9 @@ class PackMetadata:
 
             object.__setattr__(self, "version", described)
 
-    def get_available_loaders(self, *, pretend_to_be_forge: bool = False):
+    def get_available_loaders(
+        self, *, pretend_to_be_forge: bool = False
+    ) -> tuple[str] | tuple[str, str]:
         """
         Returns the available modloaders, in priority order.
         """

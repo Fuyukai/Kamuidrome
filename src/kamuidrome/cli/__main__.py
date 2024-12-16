@@ -70,7 +70,7 @@ def main() -> int:
         "--ignore-dependencies",
         action="store_true",
         default=False,
-        help="Skips dependency resolution"
+        help="Skips dependency resolution",
     )
     add_group = add_mod.add_mutually_exclusive_group(required=True)
     add_group.add_argument(
@@ -213,7 +213,9 @@ def main() -> int:
             return download_all_mods(pack, api, cache)
 
         elif subcommand == "update":
-            return update_all_mods(pack, api, cache, with_changed_dependencies=args.with_changed_dependencies)
+            return update_all_mods(
+                pack, api, cache, with_changed_dependencies=args.with_changed_dependencies
+            )
 
         elif subcommand == "list":
             return list_indexed_mods(pack)

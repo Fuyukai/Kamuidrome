@@ -244,11 +244,11 @@ class ProjectVersion:
         return hash(self.project_id)
 
     @typing.override
-    def __eq__(self, __value: object) -> bool:
-        if not isinstance(__value, ProjectVersion):
+    def __eq__(self, /, value: object) -> bool:
+        if not isinstance(value, ProjectVersion):
             return NotImplemented
 
-        return self.project_id == __value.project_id
+        return self.project_id == value.project_id
 
     def __attrs_post_init__(self) -> None:
         if len(self.files) == 1:

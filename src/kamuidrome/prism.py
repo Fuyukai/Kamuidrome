@@ -44,7 +44,7 @@ def get_prism_instances_directory() -> Path:
     )
 
 
-def find_minecraft_dir(instances_dir: Path, instance: str):
+def find_minecraft_dir(instances_dir: Path, instance: str) -> Path:
     """
     Finds the ``.minecraft`` directory within a Prism Launcher instance directory.
     """

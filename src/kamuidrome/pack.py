@@ -167,7 +167,9 @@ class LocalPack:
                 version = job.version
 
                 old_metadata = self.mods.get(project.id)
-                exists_already = cache.get_real_filename(version.project_id, version.id) is not None
+                real_filename = cache.get_real_filename(version.project_id, version.id)
+                saved_filename = cache.get_mod_path(version.project_id, version.id)
+                exists_already = real_filename is not None and saved_filename.exists()
 
                 current_task = tasks_by_mod[version.project_id]
 
@@ -297,7 +299,17 @@ class LocalPack:
         symlink_index: list[str] = []
 
         def symlink(symlink_file: Path, original: Path, is_dir: bool) -> None:
-            symlink_file.symlink_to(original, target_is_directory=is_dir)
+            try:
+                symlink_file.symlink_to(original, target_is_directory=is_dir)
+            except FileExistsError:
+                if is_dir:
+                    raise
+
+                print(f"[yellow]warning: inconsistent cache, overwriting {symlink_file}[/yellow]")
+
+                os.unlink(symlink_file)
+                symlink_file.symlink_to(original)
+
             symlink_index.append(str(symlink_file))
 
         # step 2: symlink the custom directories
