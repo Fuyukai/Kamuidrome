@@ -4,3 +4,5 @@
 testpack/
 docs/build/
 dist/
+
+.pdm-python

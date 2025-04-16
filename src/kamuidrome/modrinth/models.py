@@ -6,7 +6,7 @@ from typing import Literal, NewType, final, overload
 import attr
 import cattr
 from cattr import Converter, override
-from cattrs.gen._consts import AttributeOverride
+from cattrs.gen._consts import AttributeOverride  # type: ignore
 from whenever import Instant
 
 # Revert this commit when cattrs 24.x drops.

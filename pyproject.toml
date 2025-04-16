@@ -1,45 +1,44 @@
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
-[tool.poetry]
-name = "kamuidrome"
-version = "0.7.0"
-description = "Modern Minecraft modpack builder"
-authors = [
-    "Lura Skye <fuyukai@proton.me>",
-    "Pebbles Dickinson <cat@not.a.real.person>"
+[project]
+authors = [{ name = "Lura Skye", email = "fuyukai@proton.me" }]
+license = { text = "GPL-3.0-or-later" }
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "attrs>=24.3.0",
+    "tomlkit>=0.13.2",
+    "rich>=13.9.4",
+    "platformdirs>=4.3.6",
+    "more-itertools>=10.5.0",
+    "cattrs>=24.1.2",
+    "whenever>=0.6.15",
 ]
+name = "kamuidrome"
+dynamic = ["version"]
+description = "Modern Minecraft modpack builder"
 readme = "README.rst"
-packages = [{include = "kamuidrome", from = "src"}]
-license = "GPL-3.0-or-later"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Topic :: Games/Entertainment",
-    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)"
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
 ]
 
-[tool.poetry.dependencies]
-python = ">=3.12"
-httpx = ">=0.28.1"
-attrs = ">=24.3.0"
-tomlkit = ">=0.13.2"
-rich = ">=13.9.4"
-platformdirs = ">=4.3.6"
-more-itertools = ">=10.5.0"
-cattrs = ">=24.1.2"
-whenever = ">=0.6.15"
-
-[tool.poetry.group.dev.dependencies]
-ruff = ">=0.8.3"
-pyright = ">=1.1.390"
-
-[tool.poetry.scripts]
+[project.scripts]
 kamuidrome = "kamuidrome.cli.__main__:main"
 
-[tool.poetry-dynamic-versioning]
-enable = true
+
+[dependency-groups]
+dev = ["ruff>=0.8.3", "pyright>=1.1.390"]
+
+[tool.pdm.build]
+includes = ["src/kamuidrome"]
+
+[tool.pdm.version]
+source = "scm"
 
 [tool.pyright]
 pythonVersion = "3.12"
@@ -77,13 +76,15 @@ select = [
     "C4",
 
     # specific docstring rules
-    "D101", "D102", "D103",           # mandate docstrings
-    "D201", "D204", "D211", "D419",   # less ugly docstrings
+    "D101",
+    "D102",
+    "D103", # mandate docstrings
+    "D201",
+    "D204",
+    "D211",
+    "D419", # less ugly docstrings
 ]
-ignore = [
-    "W291",
-    "W293",
-]
+ignore = ["W291", "W293"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/test_*" = ["D"]
