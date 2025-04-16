@@ -112,7 +112,7 @@ class PackMetadata:
             return
 
         with contextlib.suppress(SubprocessError):
-            described = subprocess.check_output("git describe".split(), encoding="utf-8").strip()
+            described = subprocess.check_output(["git", "describe"], encoding="utf-8").strip()
 
             if described.startswith("v"):
                 described = described[1:]
@@ -139,9 +139,7 @@ class PackMetadata:
             case AvailablePackLoader.LEGACY_FORGE:
                 return ("forge",)
 
-            case AvailablePackLoader.NEOFORGE if (
-                pretend_to_be_forge and self.loader.sinytra_compat
-            ):
+            case AvailablePackLoader.NEOFORGE if pretend_to_be_forge and self.loader.sinytra_compat:
                 return ("forge", "fabric")
 
             case AvailablePackLoader.NEOFORGE if self.loader.sinytra_compat:

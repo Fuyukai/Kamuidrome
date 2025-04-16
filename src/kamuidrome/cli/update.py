@@ -87,9 +87,9 @@ def update_all_mods(
 
     if __debug__:
         for job in jobs:
-            assert (
-                job.project_info.id == job.version.project_id
-            ), f"{job.project_info.title} has non-matching version {job.version.id}"
+            assert job.project_info.id == job.version.project_id, (
+                f"{job.project_info.title} has non-matching version {job.version.id}"
+            )
 
     pack.download_and_add_mods(modrinth, cache, to_download, selected_mod=None)
     return 0

@@ -17,6 +17,7 @@ type VersionResult = Sequence[tuple[ProjectInfoMixin, ProjectVersion]]
 # Hardcoded Modrinth project IDs used to swap out dependencies easily.
 
 FABRIC_API_VERSION = ProjectId("P7dR8mSH")
+QSL_API_ID = ProjectId("qvIfYCYJ")
 FORGIFIED_API_VERSION = ProjectId("Aqlf1Shp")
 MODMENU_API_ID = ProjectId("mOgUt4GM")
 CONNECTOR_EXTRAS_ID = ProjectId("FYpiwiBR")
@@ -112,13 +113,11 @@ def _do_resolve_latest_version(
 
         # only assign if ``secondary_version`` is None, because we don't want to replace it with
         # an older version for no reason.
-        if all(
-            (
-                secondary_loader is not None,
-                secondary_loader in version.loaders,
-                secondary_version is None,
-            )
-        ):
+        if all((
+            secondary_loader is not None,
+            secondary_loader in version.loaders,
+            secondary_version is None,
+        )):
             print(
                 f"[italic yellow]saving fallback secondary (off-loader) version[/italic yellow] "
                 f"[bold white]{version.version_number}[/bold white] ({version.loaders}) "
@@ -169,8 +168,6 @@ def resolve_latest_version(
 
     If ``allow_unstable`` is False, then the most recent *stable* version is chosen; otherwise,
     unstable (alpha and beta) versions will be picked.
-
-    This is a wrapper function that will force a retry
     """
 
     retry_for_forge = "neoforge" in pack.available_loaders and pack.game_version == "1.20.1"
@@ -235,17 +232,15 @@ def get_set_of_dependencies(pack: PackMetadata, version: ProjectVersion) -> list
 def resolve_dependency_versions(
     pack: PackMetadata,
     modrinth: ModrinthApi,
-    selected_version: ProjectVersion,
+    original_selected_version: ProjectVersion,
     _seen: set[ProjectId] | None = None,
 ) -> VersionResult:
     """
     Recursively resolves the dependency versions of the provided selected version.
     """
 
-    dependencies = get_set_of_dependencies(pack, selected_version)
-
+    dependencies = get_set_of_dependencies(pack, original_selected_version)
     seen: set[ProjectId] = _seen if _seen is not None else set()
-
     resolved: set[ProjectVersion] = set()
 
     while True:
@@ -259,6 +254,15 @@ def resolve_dependency_versions(
                 continue
 
             seen.add(project)
+
+            # Hardcode QSL swap-out for misbehaved projects.
+            if project == QSL_API_ID and "fabric" in original_selected_version.loaders:
+                print(
+                    "[yellow]skipping QSL resolution[/yellow] for project with incorrect dependency"
+                    " specifiers"
+                )
+                continue
+
             selected_version = resolve_latest_version(pack, modrinth, project)
             resolved.add(selected_version)
             next_dependencies += get_set_of_dependencies(pack, selected_version)

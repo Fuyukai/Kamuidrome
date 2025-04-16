@@ -186,13 +186,13 @@ def create_mrpack(
             try:
                 git_buf = StringIO()
                 current_commit = subprocess.check_output(
-                    "git rev-parse HEAD".split(), encoding="utf-8"
+                    ["git", "rev-parse", "HEAD"], encoding="utf-8"
                 ).strip()
                 current_branch = subprocess.check_output(
-                    "git rev-parse --abbrev-ref HEAD".split(), encoding="utf-8"
+                    ["git", "rev-parse", "--abbrev-ref", "HEAD"], encoding="utf-8"
                 ).strip()
                 commit_message = subprocess.check_output(
-                    "git show-branch --no-name HEAD".split(), encoding="utf-8"
+                    ["git", "show-branch", "--no-name", "HEAD"], encoding="utf-8"
                 ).strip()
 
                 git_buf.write(current_commit)
