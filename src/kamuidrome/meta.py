@@ -4,6 +4,7 @@ import subprocess
 from subprocess import SubprocessError
 
 import attr
+import attrs
 
 
 class AvailablePackLoader(enum.Enum):
@@ -174,7 +175,7 @@ class PackMetadata:
                 return ("neoforge",)
 
 
-@attr.s(slots=True, kw_only=True)
+@attrs.define(kw_only=True)
 class LocalMetadata:
     """
     Wrapper for the data within the ``localpack.toml``.
@@ -184,4 +185,4 @@ class LocalMetadata:
     instance_name: str = attr.ib()
 
     #: Extra directories to symlink, but not to include.
-    extra_symlinked_dirs: list[str] = attr.ib(factory=list)
+    extra_symlinked_dirs: list[str] = attrs.field(factory=list[str])

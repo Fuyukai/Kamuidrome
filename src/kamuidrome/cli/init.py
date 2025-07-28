@@ -1,4 +1,3 @@
-# flake8: noqa: F841
 
 import os
 import subprocess

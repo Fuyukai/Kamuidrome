@@ -233,7 +233,7 @@ class ProjectVersion:
     version_type: Literal["release", "beta", "alpha"] = attr.ib()
 
     #: The relationships for this version.
-    relationships: list[ProjectVersionRelation] = attr.ib(factory=list)
+    relationships: list[ProjectVersionRelation] = attr.ib(factory=list[ProjectVersionRelation])
 
     #: The list of :class:`.ProjectVersionFile` instances for this single version (e.g. main mod
     #: and sources jar, for weirdos who use Modrinth maven).

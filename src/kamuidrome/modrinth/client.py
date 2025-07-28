@@ -20,7 +20,7 @@ from kamuidrome.retry import RetryTransport
 
 CONVERTER = cattr.GenConverter()
 CONVERTER.forbid_extra_keys = False
-CONVERTER.register_structure_hook(Instant, lambda it, _: Instant.parse_rfc3339(it))
+CONVERTER.register_structure_hook(Instant, lambda it, _: Instant.parse_common_iso(it))
 
 ProjectInfoMixin.configure_converter(CONVERTER)
 ProjectVersion.configure_converter(CONVERTER)
